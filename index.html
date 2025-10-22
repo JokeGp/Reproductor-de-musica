@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor de Música con espectro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="logo.png" alt="Logo" class="logo">
+        </div>
+        <div class="header-right">
+            <h1 class="project-title">Furrentec Music player</h1>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+    <section class="playback-section">
+        <div class="song-info">
+            <h2 id="song-title">Título de la canción</h2>
+            <p id="album-name">Álbum - Artista</p>
+        </div>
+
+        <div class="visual-mode">
+            <label for="visual-mode">Modo visualización</label>
+            <select name="" id="view-mode" class="">
+                <option value="bars">Frecuencias</option>
+                <option value="wave">Onda</option>
+            </select>
+        </div>
+
+        <div class="analyzer-container">
+            <!-- renderisado de audiomotion -->
+            <div id="audio-visualizer"></div>
+        </div>
+
+        <div class="progress-container">
+            <span id="current-time">0:00</span>
+            <input type="range" id="progress-bar" value="0" min="0" max="100">
+            <span id="total-time">3:45</span>
+        </div>
+
+        <div class="controls">
+            <button id="shuffle-btn" title="Aleatorio">🔀</button>
+            <button id="prev-btn" title="Anterior">⏮</button>
+            <button id="play-pause-btn" title="Reproducir / Pausar">⏯</button>
+            <button id="next-btn" title="Siguiente">⏭</button>
+            <button id="repeat-btn" title="Repetir">🔁</button>
+        </div>
+
+    </section>
+
+    <section class="bottom-section">
+        <div class="bottom-section-btns">
+            <button id="play-pause-btn">seleccionar album</button>
+            <button id="stop-btn">tracklist</button>
+        </div>
+        <div class="bottom-section-content" id="bottom-section-content">
+        </div>
+    </section>
+    </main>
+
+      <footer class="main-footer">
+         <p>© 2025 Furrentec</p>
+     </footer>
+
+
+
+ <script src="https://unpkg.com/audiomotion-analyzer/dist"></script> 
+ <script src="main.js"></script>
+</body>
+</html>
