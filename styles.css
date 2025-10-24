@@ -153,3 +153,75 @@ body {
     flex: 1;
   }
 }
+
+/* === ALBUM GRID === */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.album-card {
+  background-color: #1a1a22;
+  border-radius: 10px;
+  text-align: center;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.album-card:hover {
+  background-color: #2b2b39;
+  transform: translateY(-3px);
+}
+
+.album-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+/* === TRACKLIST === */
+.track-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.track-list li {
+  background-color: #101018;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.track-list li:hover {
+  background-color: #2a2a38;
+}
+
+#spectroCanvas {
+  width: 100%;
+  height: 300px;
+  display: block;
+  background: black;
+}
+
+
+/* 
+
+  source: audio,          // pasar la referencia al elemento <audio>
+    start: false,           // IMPORTANT: no arrancar hasta que el usuario haga play
+    showScaleX: true,
+    showScaleY: true,
+    showPeaks: true,
+    gradient: 'classic',
+    mode: 0,
+    analyzerType: 'frequency',
+    reflexRatio: 0.1,
+    smoothing: 0.7,
+    height: container.clientHeight || 200 */

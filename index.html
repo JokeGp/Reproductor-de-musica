@@ -1,75 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor de Música con espectro</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forentec Music Player</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-left">
-            <img src="logo.png" alt="Logo" class="logo">
-        </div>
-        <div class="header-right">
-            <h1 class="project-title">Furrentec Music player</h1>
-        </div>
-    </header>
 
-    <main class="main-container">
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="header-left">
+      <img src="./assets/logo.png" alt="Logo" class="logo">
+    </div>
+    <div class="header-right">
+      <h1 class="project-title">🎶 Forentec Music Player</h1>
+    </div>
+  </header>
 
+  <!-- MAIN -->
+  <main class="main-container">
+    
+    <!-- SECCIÓN DE REPRODUCCIÓN -->
     <section class="playback-section">
-        <div class="song-info">
-            <h2 id="song-title">Título de la canción</h2>
-            <p id="album-name">Álbum - Artista</p>
-        </div>
+      <div class="song-info">
+        <h2 id="song-title">Título de la canción</h2>
+        <p id="album-name">Álbum - Artista</p>
+      </div>
 
-        <div class="visual-mode">
-            <label for="visual-mode">Modo visualización</label>
-            <select name="" id="view-mode" class="">
-                <option value="bars">Frecuencias</option>
-                <option value="wave">Onda</option>
-            </select>
-        </div>
+      <div class="visual-mode">
+        <label for="view-mode">Modo visualización:</label>
+        <select id="view-mode">
+          <option value="bars">Frecuencias</option>
+          <option value="wave">Onda</option>
+          <option value="spectrogram">Espectrograma</option>
 
-        <div class="analyzer-container">
-            <!-- renderisado de audiomotion -->
-            <div id="audio-visualizer"></div>
-        </div>
+        </select>
+      </div>
 
-        <div class="progress-container">
-            <span id="current-time">0:00</span>
-            <input type="range" id="progress-bar" value="0" min="0" max="100">
-            <span id="total-time">3:45</span>
-        </div>
+      <!-- VISUALIZADOR -->
+      <div id="audio-visualizer" class="analyzer-container"></div>
+      <canvas id="spectrogram-canvas" class="analyzer-canvas"></canvas
 
-        <div class="controls">
-            <button id="shuffle-btn" title="Aleatorio">🔀</button>
-            <button id="prev-btn" title="Anterior">⏮</button>
-            <button id="play-pause-btn" title="Reproducir / Pausar">⏯</button>
-            <button id="next-btn" title="Siguiente">⏭</button>
-            <button id="repeat-btn" title="Repetir">🔁</button>
-        </div>
+      
 
+      <!-- PROGRESO -->
+      <div class="progress-container">
+        <span id="current-time">0:00</span>
+        <input type="range" id="progress-bar" value="0" min="0" max="100">
+        <span id="total-time">0:00</span>
+      </div>
+
+      <!-- CONTROLES -->
+      <div class="controls">
+        <button id="shuffle-btn" title="Aleatorio">🔀</button>
+        <button id="prev-btn" title="Anterior">⏮</button>
+        <button id="play-pause-btn" title="Reproducir / Pausar">▶ Reproducir</button>
+        <button id="next-btn" title="Siguiente">⏭</button>
+        <button id="repeat-btn" title="Repetir">🔁</button>
+      </div>
+
+      <!-- ELEMENTO DE AUDIO (invisible) -->
+      <audio id="player-audio" crossorigin="anonymous"></audio>
     </section>
 
+    <!-- SECCIÓN DE ÁLBUMES Y TRACKS -->
     <section class="bottom-section">
-        <div class="bottom-section-btns">
-            <button id="play-pause-btn">seleccionar album</button>
-            <button id="stop-btn">tracklist</button>
-        </div>
-        <div class="bottom-section-content" id="bottom-section-content">
-        </div>
+      <div class="bottom-section-btns">
+        <button id="show-albums-btn">🎵 Seleccionar álbum</button>
+        <button id="show-tracks-btn">📜 Tracklist</button>
+      </div>
+
+      <div class="bottom-section-content" id="bottom-section-content">
+        <!-- Contenedor dinámico -->
+        <div id="album-list" class="album-grid"></div>
+        <ul id="track-list" class="track-list"></ul>
+      </div>
     </section>
-    </main>
+  </main>
 
-      <footer class="main-footer">
-         <p>© 2025 Furrentec</p>
-     </footer>
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <p>© 2025 Forentec Music Player</p>
+  </footer>
 
-
-
- <script src="https://unpkg.com/audiomotion-analyzer/dist"></script> 
- <script src="main.js"></script>
+  <!-- LIBRERÍA AUDIO MOTION -->
+  <script src="https://unpkg.com/audiomotion-analyzer/dist"></script>
+  <script src="main.js"></script>
 </body>
 </html>
