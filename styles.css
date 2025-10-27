@@ -20,9 +20,39 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #1b1b24;
-  border-bottom: 2px solid #29293a;
+  background-color: #FAF5FD;
 }
+.forentec-icon{
+
+}
+
+.theme-toggle {
+  display: flex;
+  gap: 8px;
+  font-family: sans-serif;
+  background-color: #CDCDCD4D;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  color: #6a1b9a; /* morado */
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 500;
+}
+
+.toggle-btn.active {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px #d1c4e9; /* leve realce */
+}
+
+.toggle-btn:hover {
+  background-color: #e0e0e0;
+}
+
 
 .logo {
   width: 50px;
@@ -39,18 +69,26 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 2rem;
   gap: 1rem;
+  background-color: #FAF5FD;
 }
 
 /* === SECCIÓN DE REPRODUCCIÓN === */
 .playback-section {
-  background-color: #1a1a22;
+  background-color: #FAF5FD;
   padding: 1rem;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  color: #5A4A62;
+}
+
+.songHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between,;
 }
 
 .song-info {
@@ -97,13 +135,13 @@ body {
 }
 
 .controls button {
-  background: #3a3a4d;
   border: none;
   color: white;
   padding: 0.5rem 0.8rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
+  background-color: transparent;
 }
 
 .controls button:hover {
@@ -112,20 +150,34 @@ body {
 
 /* === SECCIÓN INFERIOR === */
 .bottom-section {
-  background-color: #1a1a22;
+  background-color: none;
   padding: 1rem;
   border-radius: 10px;
+  color: #5A4A62;
 }
 
 .bottom-section-btns {
   display: flex;
   justify-content: space-around;
   margin-bottom: 1rem;
+} 
+
+#show-albums-btn,
+#show-tracks-btn {
+  background-color: transparent;
+  border: none;
+  color: #5A4A62;
+  padding: 8px 0;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+  
 }
 
 .bottom-section-content {
   min-height: 100px;
-  background-color: #12121a;
+  background-color: none;
   border-radius: 8px;
   padding: 0.5rem;
 }
@@ -152,18 +204,24 @@ body {
   .bottom-section {
     flex: 1;
   }
+
+  #spectrogram-canvas,
+  #audio-visualizer {
+    height: 416px !important;
+    width: 626px !important;
+  }
 }
 
 /* === ALBUM GRID === */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
   margin-top: 1rem;
 }
 
 .album-card {
-  background-color: #1a1a22;
+  display: flex;
+  background-color: #ffffff;
   border-radius: 10px;
   text-align: center;
   padding: 0.8rem;
@@ -177,7 +235,7 @@ body {
 }
 
 .album-card img {
-  width: 100%;
+  width: 59px;
   border-radius: 8px;
   margin-bottom: 0.5rem;
 }
@@ -190,7 +248,7 @@ body {
 }
 
 .track-list li {
-  background-color: #101018;
+  background-color: none;
   padding: 0.6rem 1rem;
   border-radius: 8px;
   display: flex;
@@ -203,13 +261,36 @@ body {
 .track-list li:hover {
   background-color: #2a2a38;
 }
-
-#spectroCanvas {
-  width: 100%;
-  height: 300px;
-  display: block;
+#spectrogram-canvas,
+#audio-visualizer {
+  flex: 1;
+  height: 293px;
+  width: 346px;
   background: black;
+  border-radius: 10px 0 0 10px;
+  display: block;
 }
+
+.analyzer-container {
+  position: relative; 
+}    
+
+#scale {
+ width: 44px;
+  height: 280px;
+  background: transparent;
+  border-left: 2px solid #222;
+  border-radius: 0 10px 10px 0;
+}
+
+.visualizer-wrapper {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
 
 
 /* 

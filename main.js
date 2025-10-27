@@ -30,36 +30,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     albumId: null  // si type === 'album' -> id del álbum
   };
 
-  // === AUDIO ===
-  const audio = document.getElementById('player-audio') || new Audio("./assets/audio/el-diablito-loco.mp3");
-  audio.crossOrigin = "anonymous";
+// === AUDIO ===
+const audio = document.getElementById('player-audio') || new Audio("./assets/audio/el-diablito-loco.mp3");
+audio.crossOrigin = "anonymous";
 
-  const audioMotion = new AudioMotionAnalyzer(canvas, {
-    source: audio,
-    height: canvas.clientHeight,
-    mode: 10,
-    smoothing: 0.9,
-    mirror: false,
-    showPeaks: false,
-    showScaleX: true,
-    showScaleY: true,
-    lumiBars: true,
-    colorMode: 'gradient',
-    gradient: 'rainbow',
-    analyzerType: 'frequency',
-    fadePeaks: true,
-    frequencyScale: 'log', 
-    minFreq: 180,
-    maxFreq: 18900, 
-    bgAlpha: 0.5,
-  });
+// Crear contexto de audio compartido primero
+const sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const sharedSource = sharedAudioCtx.createMediaElementSource(audio);
+const sharedAnalyser = sharedAudioCtx.createAnalyser();
+sharedAnalyser.fftSize = 2048;
 
-  // === UTILIDADES ===
-  const formatTime = sec => {
-    const m = Math.floor(sec / 60) || 0;
-    const s = Math.floor(sec % 60) || 0;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-  };
+// Conectar el source al analyser
+sharedSource.connect(sharedAnalyser);
+sharedAnalyser.connect(sharedAudioCtx.destination);
+
+// Inicializar AudioMotion con el contexto compartido
+const audioMotion = new AudioMotionAnalyzer(canvas, {
+  audioCtx: sharedAudioCtx,     // usar el contexto compartido
+  source: sharedSource,         // usar la fuente compartida
+  height: canvas.clientHeight,
+  mode: 10,
+  smoothing: 0.9,
+  mirror: false,
+  showPeaks: false,
+  showScaleX: true,
+  showScaleY: true,
+  lumiBars: true,
+  colorMode: 'gradient',
+  gradient: 'rainbow',
+  analyzerType: 'frequency',
+  fadePeaks: true,
+  frequencyScale: 'log', 
+  minFreq: 180,
+  maxFreq: 18900, 
+  bgAlpha: 0.5,
+});
+
+// Añade esta función después de las referencias DOM y antes del estado global
+const formatTime = seconds => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
   const updateProgress = () => {
     currentTimeSpan.textContent = formatTime(audio.currentTime);
@@ -70,10 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       if (audio.paused) {
         await audio.play();
-        playPauseBtn.textContent = "⏸ Pausar";
       } else {
         audio.pause();
-        playPauseBtn.textContent = "▶ Reproducir";
       }
     } catch (err) {
       console.error('Error play/pause', err);
@@ -170,7 +180,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (playNow) {
       audio.play().catch(err => console.error("play error:", err));
-      playPauseBtn.textContent = "⏸ Pausar";
     }
   };
 
@@ -391,76 +400,107 @@ document.addEventListener('DOMContentLoaded', async () => {
 // === REFERENCIAS ===
 const audioMotionContainer = document.getElementById('audio-visualizer');
 const spectroCanvas = document.getElementById('spectrogram-canvas');
-const spectroCtx = spectroCanvas.getContext('2d');
-
-// === VARIABLES DE CONTROL ===
-let spectroAnimation = null;
-let spectroActive = false;
-let sharedAnalyser = null;
+// const spectroCtx = spectroCanvas.getContext('2d', { willReadFrequently: true });
+// // === VARIABLES DE CONTROL ===
+// let spectroAnimation = null;
+// let spectroActive = false;
 
 // Mostrar AudioMotion y ocultar espectrograma al inicio
 audioMotionContainer.style.display = 'block';
 spectroCanvas.style.display = 'none';
 
-// === CREAR FUENTE DE AUDIO COMPARTIDA ===
-let sharedAudioCtx = null;
-let sharedSource = null;
 
 function initSharedAudioContext() {
-  if (sharedAudioCtx) return; // ya inicializado
+  if (!sharedAnalyser) {
+    console.error('El analyser compartido no está inicializado');
+    return null;
+  }
 
-  // Reutilizamos el contexto de audioMotion
-  sharedAudioCtx = audioMotion.audioCtx;
-  sharedSource = sharedAudioCtx.createMediaElementSource(audio);
-
-  // Creamos un analyser compartido
-  sharedAnalyser = sharedAudioCtx.createAnalyser();
-  sharedAnalyser.fftSize = 1024;
-
-  // Conectamos la fuente a ambos: a audioMotion y al analyser
-  sharedSource.connect(sharedAnalyser);
-  sharedSource.connect(audioMotion.audioCtx.destination);
-
-  console.log("🔗 Fuente de audio compartida creada.");
+  try {
+    return sharedAnalyser;
+  } catch (error) {
+    console.error('Error al inicializar el contexto de audio:', error);
+    return null;
+  }
 }
 
-// === FUNCIONES ===
+
+
+// === NUEVO ESPECTROGRAMA LOGARÍTMICO === //
+let spectroCtx, spectroAnimation;
+let spectroActive = false;
+
 const startSpectrogram = () => {
-  if (!sharedAnalyser) {
-    console.warn("⚠️ El analyser aún no está disponible.");
+  const canvas = document.getElementById("spectrogram-canvas");
+  if (!canvas || !sharedAnalyser || !sharedAudioCtx) {
+    console.warn("⚠️ No se pudo iniciar el espectrograma, falta canvas o analyser.");
     return;
   }
 
+  const ctx = canvas.getContext("2d");
+  spectroCtx = ctx;
+  spectroActive = true;
+
+  const minFreq = 180;
+  const maxFreq = 18900;
+  const fftSize = sharedAnalyser.fftSize;
   const bufferLength = sharedAnalyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
 
+  // === Funciones auxiliares === //
+  const positionToFreq = (position) => {
+    const logMin = Math.log(minFreq);
+    const logMax = Math.log(maxFreq);
+    return Math.exp(logMin + position * (logMax - logMin));
+  };
+
+  const ffmpegColor = (value) => {
+    const v = value / 255;
+    let r = 0, g = 0, b = 0;
+    if (v <= 0.25) { r = v * 4 * 64; g = 0; b = 128 + v * 4 * 127; }
+    else if (v <= 0.5) { r = 64 + (v - 0.25) * 4 * 191; g = 0; b = 255 - (v - 0.25) * 4 * 64; }
+    else if (v <= 0.75) { r = 255; g = (v - 0.5) * 4 * 128; b = 191 - (v - 0.5) * 4 * 191; }
+    else { r = 255; g = 128 + (v - 0.75) * 4 * 127; b = 0; }
+    return `rgb(${r},${g},${b})`;
+  };
+
+  // === Bucle de dibujo === //
   const drawSpectrogram = () => {
     if (!spectroActive) return;
-
     sharedAnalyser.getByteFrequencyData(dataArray);
 
-    const width = spectroCanvas.width;
-    const height = spectroCanvas.height;
+    // Desplaza la imagen 1 px a la izquierda (efecto scroll)
+    const imageData = ctx.getImageData(1, 0, canvas.width - 1, canvas.height);
+    ctx.putImageData(imageData, 0, 0);
 
-    // Desplazar el canvas hacia arriba
-    const imageData = spectroCtx.getImageData(0, 0, width, height);
-    spectroCtx.putImageData(imageData, 0, -1);
+    // Dibuja nueva columna a la derecha
+    for (let y = 0; y < canvas.height; y++) {
+      const position = y / canvas.height;
+      const freq = positionToFreq(1 - position);
+      const binIndex = Math.floor((freq * fftSize) / sharedAudioCtx.sampleRate);
 
-    // Dibujar la nueva línea (abajo)
-    for (let x = 0; x < width; x++) {
-      const i = Math.floor((x / width) * bufferLength);
-      const value = dataArray[i];
-      const hue = 240 - (value / 255) * 240;
-      spectroCtx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-      spectroCtx.fillRect(x, height - 1, 1, 1);
+      if (binIndex >= 0 && binIndex < bufferLength) {
+        const value = dataArray[binIndex];
+        ctx.fillStyle = ffmpegColor(value);
+        ctx.fillRect(canvas.width - 1, y, 1, 1);
+      }
     }
 
     spectroAnimation = requestAnimationFrame(drawSpectrogram);
   };
 
-  console.log("🎨 Iniciando espectrograma...");
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   drawSpectrogram();
 };
+
+// Detiene el espectrograma al cambiar de modo
+const stopSpectrogram = () => {
+  spectroActive = false;
+  if (spectroAnimation) cancelAnimationFrame(spectroAnimation);
+};
+
+
 
 // === EVENTO PRINCIPAL ===
 viewModeSelect.addEventListener("change", (e) => {
@@ -490,9 +530,16 @@ viewModeSelect.addEventListener("change", (e) => {
     audioMotionContainer.style.display = "none";
     spectroCanvas.style.display = "block";
     spectroActive = true;
+     spectroCanvas.width = spectroCanvas.clientWidth;
+    spectroCanvas.height = spectroCanvas.clientHeight;
 
-    // Inicializar fuente compartida si no existe
-    initSharedAudioContext();
+   if (!sharedAnalyser) {
+      const analyser = initSharedAudioContext();
+      if (!analyser) {
+        console.error('No se pudo inicializar el espectrograma');
+        return;
+      }
+    }
 
     // Ajustar tamaño del canvas
     spectroCanvas.width = spectroCanvas.clientWidth;
@@ -501,11 +548,53 @@ viewModeSelect.addEventListener("change", (e) => {
     // Arrancar espectrograma cuando haya audio
     if (!audio.paused) {
       startSpectrogram();
+      drawScale();
     } else {
-      audio.addEventListener("play", startSpectrogram, { once: true });
+      audio.addEventListener("play", startSpectrogram, drawScale(), { once: true });
     }
   }
 });
+
+// === Escala de frecuencias (junto al espectrograma) ===
+function drawScale() {
+  const canvas = document.getElementById('scale');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const height = canvas.height;
+  const width = canvas.width;
+  const minFreq = 180;
+  const maxFreq = 18900;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.strokeStyle = '#888';
+  ctx.fillStyle = '#ccc';
+  ctx.font = '10px Hind Madurai';
+  ctx.textAlign = 'right';
+
+  // Líneas de referencia logarítmicas
+  const freqs = [200, 500, 1000, 2000, 5000, 10000, 15000, 18000];
+  for (const f of freqs) {
+    const y = freqToPosition(f, height, minFreq, maxFreq);
+    ctx.beginPath();
+    ctx.moveTo(width - 10, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+    ctx.fillText(f + ' Hz', width - 12, y + 3);
+  }
+}
+
+// Convierte frecuencia a posición (escala logarítmica)
+function freqToPosition(freq, height, minFreq, maxFreq) {
+  const logMin = Math.log10(minFreq);
+  const logMax = Math.log10(maxFreq);
+  const logFreq = Math.log10(freq);
+  const norm = (logFreq - logMin) / (logMax - logMin);
+  return height - norm * height;
+}
+
+// Llamar una vez al iniciar el espectrograma
+
+
 
 
 

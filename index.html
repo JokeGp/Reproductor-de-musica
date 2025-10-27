@@ -11,10 +11,14 @@
   <!-- HEADER -->
   <header class="main-header">
     <div class="header-left">
-      <img src="./assets/logo.png" alt="Logo" class="logo">
+      <img src="./assets/icons/forentec-icon.png" alt="Logo" class="forentec-icon">
     </div>
     <div class="header-right">
-      <h1 class="project-title">🎶 Forentec Music Player</h1>
+      <h1 class="project-title"><img src="./assets/icons/musicPlayer-day.png" alt="">Music Player</h1>
+    </div>
+    <div class="theme-toggle">
+      <button class="toggle-btn active" data-theme="light">Light mode</button>
+      <button class="toggle-btn" data-theme="dark">Dark mode</button>
     </div>
   </header>
 
@@ -23,13 +27,20 @@
     
     <!-- SECCIÓN DE REPRODUCCIÓN -->
     <section class="playback-section">
-      <div class="song-info">
+      <!-- VISUALIZADOR -->
+     <div class="visualizer-wrapper">
+      <div id="audio-visualizer" class="analyzer-container"></div>
+      <canvas id="spectrogram-canvas" class="analyzer-canvas"></canvas>
+      <canvas id="scale" width="60" height="400"></canvas>
+    </div>  
+       <div class="songHeader">
+         <div class="song-info">
         <h2 id="song-title">Título de la canción</h2>
         <p id="album-name">Álbum - Artista</p>
       </div>
 
       <div class="visual-mode">
-        <label for="view-mode">Modo visualización:</label>
+        <label for="view-mode"></label>
         <select id="view-mode">
           <option value="bars">Frecuencias</option>
           <option value="wave">Onda</option>
@@ -37,11 +48,7 @@
 
         </select>
       </div>
-
-      <!-- VISUALIZADOR -->
-      <div id="audio-visualizer" class="analyzer-container"></div>
-      <canvas id="spectrogram-canvas" class="analyzer-canvas"></canvas
-
+      </div>
       
 
       <!-- PROGRESO -->
@@ -53,11 +60,11 @@
 
       <!-- CONTROLES -->
       <div class="controls">
-        <button id="shuffle-btn" title="Aleatorio">🔀</button>
-        <button id="prev-btn" title="Anterior">⏮</button>
-        <button id="play-pause-btn" title="Reproducir / Pausar">▶ Reproducir</button>
-        <button id="next-btn" title="Siguiente">⏭</button>
-        <button id="repeat-btn" title="Repetir">🔁</button>
+        <button id="repeat-btn" title="Repetir"><img src="./assets/icons/repetir-day.png" alt=""></button>
+        <button id="prev-btn" title="Anterior"><img src="./assets/icons/prev-day.png" alt=""></button>
+        <button id="play-pause-btn" title="Reproducir / Pausar"><img src="./assets/icons/play-day.png" alt=""></button>
+        <button id="next-btn" title="Siguiente"><img src="./assets/icons/next-day.png" alt=""></button>
+        <button id="shuffle-btn" title="Aleatorio"><img src="./assets/icons/random-day.png" alt=""></button>
       </div>
 
       <!-- ELEMENTO DE AUDIO (invisible) -->
@@ -67,8 +74,8 @@
     <!-- SECCIÓN DE ÁLBUMES Y TRACKS -->
     <section class="bottom-section">
       <div class="bottom-section-btns">
-        <button id="show-albums-btn">🎵 Seleccionar álbum</button>
-        <button id="show-tracks-btn">📜 Tracklist</button>
+        <button id="show-albums-btn">Biblioteca</button>
+        <button id="show-tracks-btn">Tracklist</button>
       </div>
 
       <div class="bottom-section-content" id="bottom-section-content">
