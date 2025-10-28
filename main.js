@@ -1,7 +1,7 @@
 // main.js (versión corregida y consolidada)
 document.addEventListener('DOMContentLoaded', async () => {
   console.log("🎧 Iniciando...");
-
+  drawScale();
   // === REFERENCIAS DOM ===
   const playPauseBtn = document.getElementById('play-pause-btn');
   const shuffleBtn = document.getElementById('shuffle-btn');
@@ -54,7 +54,7 @@ const audioMotion = new AudioMotionAnalyzer(canvas, {
   mirror: false,
   showPeaks: false,
   showScaleX: true,
-  showScaleY: true,
+  showScaleY: false,
   lumiBars: true,
   colorMode: 'gradient',
   gradient: 'rainbow',
@@ -74,9 +74,15 @@ const formatTime = seconds => {
 };
 
   const updateProgress = () => {
-    currentTimeSpan.textContent = formatTime(audio.currentTime);
-    progressBar.value = (audio.currentTime / audio.duration) * 100 || 0;
+     currentTimeSpan.textContent = formatTime(audio.currentTime);
+  const value = (audio.currentTime / audio.duration) * 100 || 0;
+
+  progressBar.value = value;
+  progressBar.style.setProperty("--progress", value + "%");
   };
+  updateProgress();
+  audio.addEventListener("timeupdate", updateProgress);
+  audio.addEventListener("loadedmetadata", updateProgress);
 
   const togglePlayPause = async () => {
     try {
@@ -188,8 +194,10 @@ const formatTime = seconds => {
     albumList.innerHTML = albums.map(a => `
       <div class="album-card" data-id="${a.id}">
         <img src="${a.cover}" alt="${a.title}" />
-        <h3>${a.title}</h3>
-        <p>${a.artist}</p>
+        <div class="album-info">
+          <h3>${a.title}</h3>
+          <p>- ${a.artist}</p>
+        </div>
       </div>
     `).join('');
 

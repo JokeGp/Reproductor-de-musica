@@ -53,6 +53,38 @@ body {
   background-color: #e0e0e0;
 }
 
+.toggle-tab {
+  background-color: transparent;
+  border: none;
+  color: #5A4A62;
+  padding: 8px 0;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.toggle-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 10px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-tab.active {
+  color: #7802BA;
+}
+
+.toggle-tab.active::after {
+  background-color: #7802BA;
+  color: #7802BA;
+}
+
 
 .logo {
   width: 50px;
@@ -107,15 +139,15 @@ body {
   height: 200px;
   background-color: #101018;
   border-radius: 10px;
-  overflow: hidden;
+
 }
 
 .analyzer-container canvas {
   width: 100%;
   height: 100%;
   display: block;
-}
 
+}
 .progress-container {
   display: flex;
   align-items: center;
@@ -123,9 +155,56 @@ body {
   gap: 0.5rem;
 }
 
-#progress-bar {
+.progress-wrapper {
   flex: 1;
+  overflow: hidden; /* solo afecta la barra, no todo el contenedor */
 }
+
+#progress-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #E234F2 var(--progress), #e7dfdf var(--progress));
+  -webkit-appearance: none;
+  appearance: none;
+  touch-action: none; /* evita arrastrar contenedor en móviles */
+}
+
+#progress-bar::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #E234F2 var(--progress), #e7dfdf var(--progress));
+}
+
+#progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #E234F2;
+  border-radius: 50%;
+  margin-top: -4px; /* centrar con el track */
+  cursor: pointer;
+}
+
+/* Firefox */
+#progress-bar::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #e7dfdf;
+}
+#progress-bar::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: #E234F2;
+}
+#progress-bar::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #E234F2;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 
 /* === BOTONES DE CONTROL === */
 .controls {
@@ -162,7 +241,7 @@ body {
   margin-bottom: 1rem;
 } 
 
-#show-albums-btn,
+/* #show-albums-btn,
 #show-tracks-btn {
   background-color: transparent;
   border: none;
@@ -173,7 +252,7 @@ body {
   position: relative;
   transition: color 0.3s ease;
   
-}
+} */
 
 .bottom-section-content {
   min-height: 100px;
@@ -215,18 +294,28 @@ body {
 /* === ALBUM GRID === */
 .album-grid {
   display: grid;
-  gap: 1rem;
+  gap: 0.3rem;
   margin-top: 1rem;
+  
 }
+
+.album-info{
+  display: flex;
+  align-items: center;
+  margin-left: 1.1rem;
+}
+.album-info p{
+  padding-left: 0.5rem;
+} 
 
 .album-card {
   display: flex;
   background-color: #ffffff;
-  border-radius: 10px;
   text-align: center;
-  padding: 0.8rem;
+  padding: 0.7rem 0rem 0.1rem 1.2rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.3s;
+  box-shadow: 0 7px 0px 0px rgba(0, 0, 0, 0.1);
 }
 
 .album-card:hover {
@@ -277,9 +366,8 @@ body {
 
 #scale {
  width: 44px;
-  height: 280px;
+  height: 293px;
   background: transparent;
-  border-left: 2px solid #222;
   border-radius: 0 10px 10px 0;
 }
 
