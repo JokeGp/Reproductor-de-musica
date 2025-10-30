@@ -12,6 +12,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* === HEADER === */
@@ -23,7 +24,23 @@ body {
   background-color: #FAF5FD;
 }
 .forentec-icon{
+  width: 90px;
+  height: auto;
+}
+.header-right{
+  display: flex;
+  align-items: center;
+}
+.header-right img{
+  width: 14px;
+  height: auto;
+  margin-right: 6px;
+}
 
+.project-title{
+  font-size: 14px;
+  color: #7802BA;
+  font-weight: bold;
 }
 
 .theme-toggle {
@@ -31,17 +48,26 @@ body {
   gap: 8px;
   font-family: sans-serif;
   background-color: #CDCDCD4D;
+  width: 153px;
+  height: 30px;
+  border-radius: 25px;
+  justify-content: center;
+  align-items: center;
+  color: #7802BA;
 }
 
 .toggle-btn {
-  padding: 10px 20px;
+  padding: 0px 0px;
+  width: 64px;
+  height: 17px;
   border: none;
   background: none;
   border-radius: 8px;
-  color: #6a1b9a; /* morado */
+  color: #7802BA; /* morado */
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   font-weight: 500;
+  font-size: 11px;
 }
 
 .toggle-btn.active {
@@ -70,7 +96,7 @@ body {
   bottom: -4px;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 1px;
   border-radius: 10px;
   background-color: transparent;
   transition: background-color 0.3s ease;
@@ -92,7 +118,7 @@ body {
 }
 
 .project-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #f0a6ff;
 }
 
@@ -120,7 +146,7 @@ body {
 .songHeader {
   display: flex;
   width: 100%;
-  justify-content: space-between,;
+  justify-content: space-between;
 }
 
 .song-info {
@@ -221,10 +247,12 @@ body {
   cursor: pointer;
   transition: background 0.3s;
   background-color: transparent;
+  border: 2px solid transparent; /* borde inicial invisible */
+  transition: border-color 0.3s ease; 
 }
 
-.controls button:hover {
-  background: #6a2e9b;
+.controls button:active{
+    border-color: #E234F2;
 }
 
 /* === SECCIÓN INFERIOR === */
@@ -255,11 +283,39 @@ body {
 } */
 
 .bottom-section-content {
-  min-height: 100px;
   background-color: none;
   border-radius: 8px;
   padding: 0.5rem;
+  width: 100%;
+  height: 50vh; /* Ajusta según tu diseño */
+  overflow-y: auto; /* ✅ Scroll independiente */
+  overflow-x: hidden;
 }
+
+.bottom-section-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.bottom-section-content::-webkit-scrollbar-thumb {
+  background-color: #7802BA55; /* Scroll morado translúcido */
+  border-radius: 3px;
+}
+
+.bottom-section-content::-webkit-scrollbar-thumb:hover {
+  background-color: #7802BA;
+}
+
+
+
+.background-footer {
+    display: none;
+}
+
+
+.background-footer-night {
+    display: none;
+}
+
 
 /* === FOOTER === */
 .main-footer {
@@ -268,6 +324,7 @@ body {
   background-color: #1b1b24;
   color: #ccc;
   font-size: 0.8rem;
+  z-index: 2;
 }
 
 /* === MODO ESCRITORIO === */
@@ -289,6 +346,38 @@ body {
     height: 416px !important;
     width: 626px !important;
   }
+  .controls button:hover{
+    border-color: #E234F2;
+}
+  .album-card{
+    max-width: 400px !important;
+  }
+  #scale{
+    width: 47px !important;
+    height: 413px !important;
+  }
+  .background-footer {
+    position: absolute;
+    bottom: 39px;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+    display: block;
+}
+
+body.dark-mode  .background-footer-night {
+    position: absolute;
+    bottom: 39px;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+    display: block;
+}
+
 }
 
 /* === ALBUM GRID === */
@@ -303,6 +392,7 @@ body {
   display: flex;
   align-items: center;
   margin-left: 1.1rem;
+  font-size: 14px;
 }
 .album-info p{
   padding-left: 0.5rem;
@@ -312,10 +402,11 @@ body {
   display: flex;
   background-color: #ffffff;
   text-align: center;
-  padding: 0.7rem 0rem 0.1rem 1.2rem;
+  padding: 0.7rem 0rem 0.7rem 0.5rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.3s;
   box-shadow: 0 7px 0px 0px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
 }
 
 .album-card:hover {
@@ -325,9 +416,45 @@ body {
 
 .album-card img {
   width: 59px;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
 }
+
+#view-mode{
+    border-radius: 12px;
+    background-color: #CDCDCD4D;
+    color: #7802BA;
+    width: 117px;
+    height: 28px;
+    font-size: 13px;
+}
+.visual-toggle{
+    display: flex;
+    background-color: #CDCDCD4D;
+    height: 23px;
+    justify-content: center;
+    border-radius: 20px;
+    width: 184px;
+    align-items: center;
+    gap: 7px;
+}
+.visual-btn{
+  border-radius: 10px;
+  border: none;
+  width: 84px;
+  background-color: none;
+}
+
+.visual-btn img {
+  width: 19px;
+  margin-right: 3px;
+}
+
+.visual-btn.active {
+    background-color: #E234F2;
+    color: #FFFFFF;
+    height: 23px;
+    width: 84px;
+}
+
 
 /* === TRACKLIST === */
 .track-list {
@@ -379,18 +506,80 @@ body {
   gap: 0;
 }
 
+/* === MODO OSCURO === */
+body.dark-mode {
+  background-color: #0e0e11;
+  color: #fff;
+}
 
+body.dark-mode .main-header,
+body.dark-mode .main-container,
+body.dark-mode .playback-section {
+  background-color: #190961; /* color oscuro para reemplazar #FAF5FD */
+}
 
-/* 
+body.dark-mode .bottom-section-content {
+  background: none; /* opcional, si quieres oscurecer la sección inferior */
+}
 
-  source: audio,          // pasar la referencia al elemento <audio>
-    start: false,           // IMPORTANT: no arrancar hasta que el usuario haga play
-    showScaleX: true,
-    showScaleY: true,
-    showPeaks: true,
-    gradient: 'classic',
-    mode: 0,
-    analyzerType: 'frequency',
-    reflexRatio: 0.1,
-    smoothing: 0.7,
-    height: container.clientHeight || 200 */
+body.dark-mode .bottom-section {
+  background:none;
+}
+
+body.dark-mode .project-title {
+  color: #ffffff; /* o algún color claro que contraste con el fondo */
+}
+
+body.dark-mode .toggle-btn {
+  color: #f0a6ff; /* ajusta para que sea visible */
+}
+
+body.dark-mode .controls button {
+  color: #fff;
+}
+
+body.dark-moed .visual-toggle{
+  background-color: #4F4481;
+}
+
+body.dark-mode .visual-btn {
+  background-color: #4F4481;
+  color: #FFFFFF;
+}
+
+body.dark-mode .visual-btn.active {
+  background-color: #E234F2;
+  color: #FFFFFF;
+}
+
+body.dark-mode .album-card {
+  background-color: #382882;
+  color: #fff;
+}
+
+body.dark-mode .toggle-tab {
+  color: #fff;
+}
+
+body.dark-mode .toggle-tab.active::after {
+  color: #E234F2;
+}
+
+body.dark-mode .song-info p {
+  color: #FAF5FD;
+}
+body.dark-mode .song-info h2 {
+  color: #FAF5FD;
+}
+
+body.dark-mode .bottom-section {
+  color: #fffefe;
+}
+
+body.dark-mode  .background-footer {
+    display: none;
+}
+
+body.dark-mode .playback-section {
+    color: #fffefe;
+}

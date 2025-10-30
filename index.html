@@ -11,7 +11,7 @@
   <!-- HEADER -->
   <header class="main-header">
     <div class="header-left">
-      <img src="./assets/icons/forentec-icon.png" alt="Logo" class="forentec-icon">
+      <img src="./assets/icons/forentec-icon-day.png" alt="Logo" class="forentec-icon">
     </div>
     <div class="header-right">
       <h1 class="project-title"><img src="./assets/icons/musicPlayer-day.png" alt="">Music Player</h1>
@@ -41,13 +41,13 @@
 
       <div class="visual-mode">
         <label for="view-mode"></label>
-        <select id="view-mode">
-          <option value="bars">Frecuencias</option>
-          <option value="wave">Onda</option>
-          <option value="spectrogram">Espectrograma</option>
-
-        </select>
+        <div class="visual-toggle">
+        <button class="visual-btn active" data-mode="bars"> <img src="./assets/icons/bars.png" alt="">Ondas</button>
+        <button class="visual-btn" data-mode="spectrogram"> <img src="./assets/icons/frecuencias.png" alt="">Espectro</button>
       </div>
+
+      </div>
+      
       </div>
       
 
@@ -88,6 +88,10 @@
       </div>
     </section>
   </main>
+
+  <img src="./assets/icons/ondas-day.png" alt="Fondo" class="background-footer">
+  <img src="./assets/icons/ondas-night.png" alt="Fondo" class="background-footer-night">
+
 
   <!-- FOOTER -->
   <footer class="main-footer">

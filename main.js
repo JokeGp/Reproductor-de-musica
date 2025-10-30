@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // === REFERENCIAS DOM ===
   const playPauseBtn = document.getElementById('play-pause-btn');
   const shuffleBtn = document.getElementById('shuffle-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const repeatBtn = document.getElementById('repeat-btn');
   const canvas = document.getElementById('audio-visualizer');
   const currentTimeSpan = document.getElementById('current-time');
   const totalTimeSpan = document.getElementById('total-time');
@@ -16,6 +19,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   const songTitleElem = document.getElementById('song-title');
   const albumNameElem = document.getElementById('album-name');
   const viewModeSelect = document.getElementById('view-mode');
+
+const themeButtons = document.querySelectorAll('.toggle-btn');
+
+themeButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Quitar clase active de todos
+    themeButtons.forEach(b => b.classList.remove('active'));
+    // Poner active al botón clickeado
+    btn.classList.add('active');
+
+    const isDark = btn.dataset.theme === 'dark';
+    document.body.classList.toggle('dark-mode', isDark);
+
+    // Cambiar imágenes que tengan -day por -night
+    const imagesToSwap = document.querySelectorAll(
+      '.forentec-icon, .controls img, .project-title img, .background-footer'
+    );
+    imagesToSwap.forEach(img => {
+      if (isDark) {
+        img.src = img.src.replace('-day', '-night');
+      } else {
+        img.src = img.src.replace('-night', '-day');
+      }
+    });
+
+    // Redibujar la escala del canvas con el color correcto
+    if (typeof drawScale === 'function') {
+      drawScale();
+    }
+  });
+});
+
+
 
   // === ESTADO GLOBAL ===
   let albums = [];
@@ -29,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     position: 0,   // índice dentro de playlist
     albumId: null  // si type === 'album' -> id del álbum
   };
+  let repeatMode = 0; // 0 = off, 1 = repeat track, 2 = repeat playlist
 
 // === AUDIO ===
 const audio = document.getElementById('player-audio') || new Audio("./assets/audio/el-diablito-loco.mp3");
@@ -161,11 +198,9 @@ const formatTime = seconds => {
     // - Si shuffleState.type === 'global' -> NO cambiar selectedAlbum.
     // - Si shuffleState.type === 'album' -> selectedAlbum debe reflejar ese album.
     // - Si no hay shuffle -> selectedAlbum = albumObj.
-    if (shuffleState.type === 'global') {
-      // mantener selectedAlbum tal cual (puede ser null o lo que haya)
-    } else if (shuffleState.type === 'album') {
+    if (shuffleState.type === 'album') {
       selectedAlbum = albumObj;
-    } else {
+      } else if (!shuffleState.type) {
       selectedAlbum = albumObj;
     }
 
@@ -211,15 +246,23 @@ const formatTime = seconds => {
         selectedAlbum = album;
         highlightAlbum(album.id);
 
+        if (shuffleState.type === 'global') {
+        shuffleState = { type: null, playlist: [], position: 0, albumId: null };
+        shuffleBtn.classList.remove('active');
+      }
         // si hay shuffle por album y coincide -> mostrar shuffle de ese album
-        if (shuffleState.type === 'album' && shuffleState.albumId === album.id) {
-          renderShuffleTracklist();
-          shuffleBtn.classList.add('active');
-        } else {
-          // vista normal del álbum
-          renderTrackList(album);
-          shuffleBtn.classList.remove('active');
+       if (shuffleState.type === 'album' && shuffleState.albumId === album.id) {
+        renderShuffleTracklist();
+        shuffleBtn.classList.add('active');
+      } else {
+        // si había shuffle de otro álbum → APAGAR shuffle
+        if (shuffleState.type === 'album') {
+          shuffleState = { type: null, playlist: [], position: 0, albumId: null };
         }
+        renderTrackList(album);
+        shuffleBtn.classList.remove('active');
+      }
+
 
         showTracksSection();
       });
@@ -319,6 +362,7 @@ const formatTime = seconds => {
       shuffleState = { type: null, playlist: [], position: 0, albumId: null };
       renderAlbums();
       showAlbumsSection();
+      highlightAlbum(null);
       shuffleBtn.classList.remove('active');
     } else {
       // activar global shuffle
@@ -350,26 +394,34 @@ const formatTime = seconds => {
     }
 
     // 2) Si hay shuffle por álbum activo -> mostrar esa playlist (sin regenerar).
-    if (shuffleState.type === 'album') {
+   if (shuffleState.type === 'album') {
+    if (selectedAlbum && shuffleState.albumId === selectedAlbum.id) {
       renderShuffleTracklist();
       shuffleBtn.classList.add('active');
-      showTracksSection();
-      return;
+    } else {
+      // apagar shuffle si es de otro álbum
+      shuffleState = { type: null, playlist: [], position: 0, albumId: null };
+      shuffleBtn.classList.remove('active');
+      if (selectedAlbum) renderTrackList(selectedAlbum);
+      else renderAlbums();
     }
+    showTracksSection();
+    return;
+  }
 
     // 3) Si hay un álbum seleccionado -> mostrar su tracklist normal (sin shuffle).
-    if (selectedAlbum) {
+    if (selectedAlbum && shuffleState.type !== 'global') {
       renderTrackList(selectedAlbum);
       shuffleBtn.classList.remove('active');
       showTracksSection();
       return;
     }
 
-    // 4) Ningún álbum ni shuffle activo -> mostrar TODAS las canciones en orden natural (sin mezclar).
-    // Esto es la PRIORIDAD 4 que solicitaste mantener.
-    const allTracks = albums.flatMap(a =>
-      a.tracks.map(t => ({ album: a, title: t.title, duration: t.duration }))
-    );
+    // // 4) Ningún álbum ni shuffle activo -> mostrar TODAS las canciones en orden natural (sin mezclar).
+    // // Esto es la PRIORIDAD 4 que solicitaste mantener.
+    // const allTracks = albums.flatMap(a =>
+    //   a.tracks.map(t => ({ album: a, title: t.title, duration: t.duration }))
+    // );
 
     trackList.innerHTML = allTracks.map((t, i) => `
       <li data-index="${i}">
@@ -384,8 +436,11 @@ const formatTime = seconds => {
       li.addEventListener('click', () => {
         selectedAlbum = album;
         highlightAlbum(album.id);
+        shuffleState = { type: null, playlist: [], position: 0, albumId: null };
+        shuffleBtn.classList.remove('active');
         const trackIdx = album.tracks.findIndex(tt => tt.title === allTracks[i].title);
         setTrack(album, trackIdx);
+        
       });
     });
 
@@ -509,61 +564,49 @@ const stopSpectrogram = () => {
 };
 
 
+// === VISUAL MODE TOGGLE ===
+document.querySelectorAll(".visual-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
 
-// === EVENTO PRINCIPAL ===
-viewModeSelect.addEventListener("change", (e) => {
-  const mode = e.target.value;
+    // UI toggle active
+    document.querySelectorAll(".visual-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-  // Detener animaciones previas
-  if (spectroAnimation) cancelAnimationFrame(spectroAnimation);
-  spectroActive = false;
+    const mode = btn.dataset.mode;
 
-  // Modo barras o forma de onda
-  if (mode === "bars" || mode === "wave") {
-    spectroCanvas.style.display = "none";
-    audioMotionContainer.style.display = "block";
-    spectroActive = false;
+    // --- Modo barras (frecuencias) ---
+    if (mode === "bars") {
+      stopSpectrogram();
+      spectroCanvas.style.display = "none";
+      audioMotionContainer.style.display = "block";
 
-    // Configurar AudioMotion
-    audioMotion.mode = mode === "bars" ? 0 : 1;
-    audioMotion.analyzerType = mode === "bars" ? "frequency" : "waveform";
+      audioMotion.mode = 0;
+      audioMotion.analyzerType = "frequency";
 
-    console.log(`🎛️ Cambiado a modo ${mode}`);
-    return;
-  }
-
-  // Modo espectrograma
-  if (mode === "spectrogram") {
-    console.log("🎚️ Activando espectrograma...");
-    audioMotionContainer.style.display = "none";
-    spectroCanvas.style.display = "block";
-    spectroActive = true;
-     spectroCanvas.width = spectroCanvas.clientWidth;
-    spectroCanvas.height = spectroCanvas.clientHeight;
-
-   if (!sharedAnalyser) {
-      const analyser = initSharedAudioContext();
-      if (!analyser) {
-        console.error('No se pudo inicializar el espectrograma');
-        return;
-      }
+      console.log("🎛️ Frecuencias activado");
+      return;
     }
 
-    // Ajustar tamaño del canvas
-    spectroCanvas.width = spectroCanvas.clientWidth;
-    spectroCanvas.height = spectroCanvas.clientHeight;
+    // --- Modo espectrograma ---
+    if (mode === "spectrogram") {
+      console.log("🎚️ Espectrograma activado");
+      audioMotionContainer.style.display = "none";
+      spectroCanvas.style.display = "block";
 
-    // Arrancar espectrograma cuando haya audio
-    if (!audio.paused) {
-      startSpectrogram();
+      spectroCanvas.width = spectroCanvas.clientWidth;
+      spectroCanvas.height = spectroCanvas.clientHeight;
+
+      stopSpectrogram();
+      if (!audio.paused) startSpectrogram();
+      else audio.addEventListener("play", startSpectrogram, { once: true });
+
       drawScale();
-    } else {
-      audio.addEventListener("play", startSpectrogram, drawScale(), { once: true });
+      return;
     }
-  }
+  });
 });
 
-// === Escala de frecuencias (junto al espectrograma) ===
+// === Escala de frecuencias ===
 function drawScale() {
   const canvas = document.getElementById('scale');
   if (!canvas) return;
@@ -573,9 +616,14 @@ function drawScale() {
   const minFreq = 180;
   const maxFreq = 18900;
 
+  // Elegir color según el modo
+  const isDark = document.body.classList.contains('dark-mode');
+  const lineColor = isDark ? '#FFFFFF' : '#000000'; // blanco en dark, negro en light
+  const textColor = isDark ? '#FFFFFF' : '#000000';
+
   ctx.clearRect(0, 0, width, height);
-  ctx.strokeStyle = '#888';
-  ctx.fillStyle = '#ccc';
+  ctx.strokeStyle = lineColor;
+  ctx.fillStyle = textColor;
   ctx.font = '10px Hind Madurai';
   ctx.textAlign = 'right';
 
@@ -591,6 +639,7 @@ function drawScale() {
   }
 }
 
+
 // Convierte frecuencia a posición (escala logarítmica)
 function freqToPosition(freq, height, minFreq, maxFreq) {
   const logMin = Math.log10(minFreq);
@@ -600,8 +649,99 @@ function freqToPosition(freq, height, minFreq, maxFreq) {
   return height - norm * height;
 }
 
-// Llamar una vez al iniciar el espectrograma
 
+const playNextTrack = () => {
+  if (shuffleState.type) {
+    shuffleState.position++;
+
+    // Si llegamos al final
+    if (shuffleState.position >= shuffleState.playlist.length) {
+      if (repeatMode === 2) {
+        shuffleState.position = 0; // reinicia playlist
+      } else {
+        shuffleState.position = shuffleState.playlist.length - 1; // evita overflow
+        return; // playlist terminó sin repeat
+      }
+    }
+
+    const nextItem = shuffleState.playlist[shuffleState.position];
+    if (!nextItem) return; // protección extra
+    const { album, index } = nextItem;
+    setTrack(album, index);
+    return;
+  }
+
+  if (!selectedAlbum) return;
+
+  let next = currentTrackIndex + 1;
+  if (next >= selectedAlbum.tracks.length) {
+    if (repeatMode === 2) next = 0;
+    else return;
+  }
+
+  setTrack(selectedAlbum, next);
+};
+
+
+const playPrevTrack = () => {
+  if (audio.currentTime > 2) {
+    audio.currentTime = 0;
+    return;
+  }
+
+  if (shuffleState.type) {
+    shuffleState.position--;
+    if (shuffleState.position < 0) {
+      if (repeatMode === 2) {
+        shuffleState.position = shuffleState.playlist.length - 1;
+      } else {
+         shuffleState.position = 0; // evita underflow
+       return;
+      }
+      return;
+    }
+    
+
+    const { album, index } = shuffleState.playlist[shuffleState.position];
+    setTrack(album, index);
+    return;
+  }
+
+  if (!selectedAlbum) return;
+
+  let prev = currentTrackIndex - 1;
+  if (prev < 0) {
+    if (repeatMode === 2) prev = selectedAlbum.tracks.length - 1;
+    else return;
+  }
+
+  setTrack(selectedAlbum, prev);
+};
+
+// const updateRepeatIcon = () => {
+//   const icons = [
+//     "./assets/icons/repetir-off.png",
+//     "./assets/icons/repetir-uno.png",
+//     "./assets/icons/repetir-lista.png"
+//   ];
+//   repeatBtn.querySelector("img").src = icons[repeatMode];
+// };
+
+repeatBtn.addEventListener('click', () => {
+  repeatMode = (repeatMode + 1) % 3;
+});
+
+audio.addEventListener("ended", () => {
+  if (repeatMode === 1) {
+    audio.currentTime = 0;
+    audio.play();
+    return;
+  }
+
+  playNextTrack();
+});
+nextBtn.addEventListener('click', playNextTrack);
+prevBtn.addEventListener('click', playPrevTrack);
 
 
 
