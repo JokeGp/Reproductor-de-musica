@@ -17,8 +17,24 @@ export function drawScale() {
     const maxFreq = 18900;
 
     const isDark = document.body.classList.contains('dark-mode');
-    const lineColor = isDark ? '#FFFFFF' : '#000000';
-    const textColor = isDark ? '#FFFFFF' : '#000000';
+    const isSecret = document.body.classList.contains('secret-mode');
+    const isChristmas = document.body.classList.contains('christmas-mode');
+
+    let lineColor = '#000000';
+    let textColor = '#000000';
+
+    if (isDark) {
+        lineColor = '#FFFFFF';
+        textColor = '#FFFFFF';
+    }
+    if (isSecret) {
+        lineColor = '#FEFAE0';
+        textColor = '#FEFAE0';
+    }
+    if (isChristmas) {
+        lineColor = '#E6C695';
+        textColor = '#E6C695';
+    }
 
     ctx.clearRect(0, 0, width, height);
     ctx.strokeStyle = lineColor;

@@ -212,6 +212,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Update icons
       updateIcons();
+
+      // Update scale color
+      drawScale();
     });
   });
 
@@ -491,6 +494,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Init uploads listeners
   initUploadListeners();
+
+  // Upload button hover effect for Christmas mode
+  const uploadBtn = document.getElementById('upload-btn');
+  if (uploadBtn) {
+    const uploadIcon = uploadBtn.querySelector('.uploadMusic');
+    if (uploadIcon) {
+      uploadBtn.addEventListener('mouseenter', () => {
+        if (document.body.classList.contains('christmas-mode')) {
+          // Change to hover icon
+          uploadIcon.src = './assets/icons/upload-hover-christmas.png';
+        }
+      });
+
+      uploadBtn.addEventListener('mouseleave', () => {
+        if (document.body.classList.contains('christmas-mode')) {
+          // Revert to standard christmas icon
+          uploadIcon.src = './assets/icons/upload-christmas.png';
+        }
+      });
+    }
+  }
 
   // Load albums.json initially
   loadAlbumsData('./data/albums.json');

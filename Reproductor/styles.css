@@ -30,6 +30,10 @@ body {
   background-color: #FAF5FD;
 }
 
+h3 {
+  font-weight: normal;
+}
+
 .header-left {
   display: flex;
 }
@@ -144,8 +148,8 @@ body {
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  width: 36px;
-  height: 154px;
+  width: 32px;
+  height: 137px;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -227,7 +231,7 @@ body.secret-mode {
 
 /* CHRISTMAS MODE (PLACEHOLDER) */
 body.christmas-mode {
-  --vol-color: #ff0000;
+  --vol-color: #E6C695;
   --vol-bg: #0f3014;
   --vol-text: #d1fbd9;
 }
@@ -712,7 +716,7 @@ body.dark-mode .visual-option:hover {
 
 /* === MODO OSCURO === */
 body.dark-mode {
-  background-color: #0e0e11;
+  background-color: #050E21;
   color: #fff;
 }
 
@@ -720,6 +724,41 @@ body.dark-mode .main-header,
 body.dark-mode .main-container,
 body.dark-mode .playback-section {
   background-color: #050E21;
+}
+
+body.dark-mode .toggle-tab:hover {
+  color: #E234F2;
+}
+
+body.dark-mode .toggle-btn:hover {
+  background-color: #E234F2;
+}
+
+body.dark-mode .toggle-btn.active:hover {
+  background-color: #E234F2;
+}
+
+body.dark-mode .track-list li:hover {
+  border-color: #E234F2;
+  color: #E234F2;
+}
+
+body.dark-mode .volume-slider-wrapper {
+  background-color: #2A3242;
+}
+
+body.dark-mode #volume-slider {
+  background: linear-gradient(to right, #E737F5 var(--volume, 100), #444D5D var(--volume, 100));
+}
+
+body.dark-mode .main-footer {
+  background-color: transparent;
+}
+
+body.dark-mode .visual-dropdown-selected {
+  background-color: #050E21;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
 }
 
 body.dark-mode .bottom-section-content {
@@ -739,7 +778,7 @@ body.dark-mode .toggle-btn {
 }
 
 body.dark-mode .toggle-btn.active {
-  background-color: #9B2DD9;
+  background-color: #050E21;
   border: none;
 }
 
@@ -770,6 +809,14 @@ body.dark-mode .album-card:hover {
   color: #E234F2;
   ;
   transform: translateY(-3px);
+}
+
+body.dark-mode .visual-dropdown-selected:hover {
+  background-color: #E234F2;
+}
+
+body.dark-mode .visual-option:hover {
+  background-color: #E234F2;
 }
 
 body.dark-mode .toggle-tab {
@@ -871,6 +918,10 @@ body.dark-mode .toast {
   #audio-visualizer {
     height: 416px !important;
     width: 626px !important;
+  }
+
+  #visualizer-video {
+    height: 417px !important;
   }
 
   .visualizer-wrapper {
@@ -1105,12 +1156,8 @@ body.secret-mode .volume-slider-wrapper {
   background-color: #670214;
 }
 
-body.secret-mode .visual-dropdown-selected:hover {
-  background-color: #9A031E;
-}
-
 body.secret-mode .visual-option:hover {
-  background-color: #9A031E;
+  background-color: #9A031E !important;
 }
 
 
@@ -1129,20 +1176,179 @@ body.secret-mode .background-footer {
   display: none;
 }
 
-/* CHRISTMAS MODE (PLACEHOLDER) */
+/* CHRISTMAS MODE */
 body.christmas-mode {
-  background-color: #0f3014;
+  /* Dimensions for the Christmas background */
+  background-image: url('./assets/icons/christmas-background.gif');
+  background-size: cover;
+  /* Change to 'contain' or specific values (e.g. 100% 100%) to adjust */
+  background-position: center;
+  background-repeat: no-repeat;
+  /* End of background dimensions */
+
+  background-color: #0A3D3A;
+  /* Fallback color */
   color: #d1fbd9;
+}
+
+body.christmas-mode .project-title {
+  color: #FAF5FD;
+}
+
+body.christmas-mode .main-container {
+  background-color: transparent;
+}
+
+body.christmas-mode .main-header {
+  background-color: transparent;
 }
 
 body.christmas-mode .playback-section,
 body.christmas-mode .bottom-section-content {
-  background-color: #1a4f22;
+  background-color: transparent;
+}
+
+body.christmas-mode .bottom-section-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+body.christmas-mode .bottom-section-content::-webkit-scrollbar-thumb {
+  background-color: #E6C695;
+  border-radius: 3px;
+}
+
+body.christmas-mode .bottom-section-content::-webkit-scrollbar-thumb:hover {
+  background-color: #E6C695;
+}
+
+body.christmas-mode .toggle-tab:hover {
+  color: #E6C695;
+}
+
+body.christmas-mode .toggle-tab.active {
+  color: #E6C695;
+}
+
+body.christmas-mode .toggle-tab.active::after {
+  background-color: #E6C695;
 }
 
 body.christmas-mode .controls button,
 body.christmas-mode .toggle-tab,
-body.christmas-mode .song-info h2 {
-  color: #f00;
-  /* Red accents */
+body.christmas-mode .song-info h2,
+body.christmas-mode .playback-section {
+  color: #FAF5FD;
+}
+
+body.christmas-mode #progress-bar {
+  background: linear-gradient(to right, #E6C695 var(--progress), #5B6577 var(--progress));
+}
+
+body.christmas-mode #progress-bar::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, #E6C695 var(--progress), #5B6577 var(--progress));
+}
+
+body.christmas-mode #progress-bar::-moz-range-track {
+  background: #5B6577;
+  /* Firefox range track background is usually static, progress is handled by range-progress */
+}
+
+body.christmas-mode #progress-bar::-moz-range-progress {
+  background-color: #E6C695;
+}
+
+body.christmas-mode #progress-bar::-webkit-slider-thumb {
+  background: #E6C695;
+}
+
+body.christmas-mode #upload-btn:hover {
+  background-color: #E6C695;
+  border-color: #ffff;
+  color: #9A031E;
+}
+
+body.christmas-mode .controls button:hover {
+  border-color: #E6C695;
+}
+
+body.christmas-mode .toggle-btn.active {
+  background-color: #0A3D3A;
+  color: #E6C695;
+}
+
+body.christmas-mode .toggle-btn:hover {
+  background-color: #0A3D3A;
+}
+
+body.christmas-mode .visual-dropdown-selected {
+  background: none;
+  color: #FFFFFF;
+  border: 2px solid #ffff;
+}
+
+body.christmas-mode .visual-dropdown-options {
+  background: none;
+  border: 2px solid #ffff;
+}
+
+body.christmas-mode .visual-option {
+  color: #FFFFFF;
+}
+
+body.christmas-mode .visual-dropdown-selected:hover {
+  background-color: #0E6957;
+}
+
+body.christmas-mode .visual-option:hover {
+  background-color: #0E6957;
+}
+
+body.christmas-mode .track-list li:hover {
+  border-color: #E6C695;
+  color: #E6C695;
+}
+
+
+body.christmas-mode #upload-btn {
+  background-color: #9A031E;
+  border: 2px solid #9A031E;
+  color: #ffff;
+}
+
+body.christmas-mode .visual-dropdown-selected {
+  background-color: transparent;
+  color: #FAECD8;
+  border: 2px solid #FAECD8;
+}
+
+body.christmas-mode .album-card {
+  display: flex;
+  background-color: #0E6957;
+  color: #FAF5FD;
+  font-weight: lighter;
+}
+
+body.christmas-mode .album-card:hover {
+  background-color: #E6C695;
+  color: #981817;
+}
+
+body.christmas-mode .background-footer {
+  display: none;
+}
+
+body.christmas-mode .main-footer {
+  background-color: transparent;
+}
+
+body.christmas-mode .bottom-section {
+  color: #FAF5FD;
+}
+
+body.christmas-mode .volume-slider-wrapper {
+  background-color: #0E6957;
+}
+
+body.christmas-mode #volume-slider {
+  background: linear-gradient(to right, #E6C695 var(--volume, 100), #5B6577 var(--volume, 100));
 }
