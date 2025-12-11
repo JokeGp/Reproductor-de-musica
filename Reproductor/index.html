@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forentec Music Player</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Major+Mono+Display&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <div class="header-left">
+      <img src="./assets/icons/forentec-icon-day.png" alt="Logo" class="forentec-icon">
+      <h1 class="project-title"><img src="./assets/icons/musicPlayer-day.png" alt="">Music Player</h1>
+    </div>
+    <div class="header-right">
+      <h1 class="project-title"><img src="./assets/icons/musicPlayer-day.png" alt="">Music Player</h1>
+    </div>
+
+    <div class="theme-toggle" id="theme-toggle-container">
+      <button class="toggle-btn active" data-theme="light"><img src="./assets/icons/day-day.png" alt=""><span>Light
+          mode</span></button>
+      <button class="toggle-btn" data-theme="dark"><img src="./assets/icons/moon-day.png" alt=""><span>Dark
+          mode</span></button>
+      <button class="toggle-btn" data-theme="christmas"><img src="./assets/icons/christmas-day.png"
+          alt=""><span>Christmas
+          mode</span></button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-container">
+
+    <!-- SECCIÓN DE REPRODUCCIÓN -->
+    <section class="playback-section">
+      <!-- VISUALIZADOR -->
+      <div class="visualizer-wrapper">
+        <div id="audio-visualizer" class="analyzer-container"></div>
+        <canvas id="spectrogram-canvas" class="analyzer-canvas" style="display: none;"></canvas>
+        <video id="visualizer-video" src="./assets/videos/rocky.mp4" loop muted playsinline
+          style="display: none; object-fit: cover; width: 100%; height: 293px; border-radius: 10px 0 0 10px; flex: 1;"></video>
+        <canvas id="scale" width="60" height="400"></canvas>
+      </div>
+      <div class="songHeader">
+        <div class="song-info">
+          <h2 id="song-title">Título de la canción</h2>
+          <p id="album-name">Álbum - Artista</p>
+        </div>
+
+        <div class="visual-mode">
+          <label for="view-mode"></label>
+          <div class="visual-dropdown" id="visual-dropdown">
+            <button class="visual-dropdown-selected" id="visual-selected">
+              <img src="./assets/icons/bars-day.png" alt=""> Ondas
+            </button>
+            <div class="visual-dropdown-options" id="visual-options">
+              <button class="visual-option" data-mode="bars">
+                <img src="./assets/icons/bars-day.png" alt=""> Ondas
+              </button>
+              <button class="visual-option" data-mode="spectrogram">
+                <img src="./assets/icons/frecuencias-day.png" alt=""> Espectro
+              </button>
+              <button class="visual-option" data-mode="visualizer">
+                <img src="./assets/icons/bars-day.png" alt=""> Visualizer
+              </button>
+            </div>
+          </div>
+
+          <div class="volume-container">
+            <button class="volume-btn" id="volume-btn"><img src="./assets/icons/speaker-day.png"
+                alt="volume-btn"></button>
+            <div class="volume-slider-wrapper" id="volume-slider-wrapper">
+              <span id="volume-value" class="volume-value-text">100</span>
+              <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- PROGRESO -->
+      <div class="progress-container">
+        <span id="current-time">0:00</span>
+        <div class="progress-wrapper">
+          <input type="range" id="progress-bar" value="0" min="0" max="100">
+        </div>
+        <span id="total-time">0:00</span>
+      </div>
+
+
+      <!-- CONTROLES -->
+      <div class="controls">
+        <button id="repeat-btn" title="Repetir"><img src="./assets/icons/repetir-day.png" alt=""></button>
+        <button id="prev-btn" title="Anterior"><img src="./assets/icons/prev-day.png" alt=""></button>
+        <button id="play-pause-btn" title="Reproducir / Pausar"><img src="./assets/icons/play-day.png" alt=""></button>
+        <button id="next-btn" title="Siguiente"><img src="./assets/icons/next-day.png" alt=""></button>
+        <button id="shuffle-btn" title="Aleatorio"><img src="./assets/icons/random-day.png" alt=""></button>
+      </div>
+
+
+
+      <!-- ELEMENTO DE AUDIO (invisible) -->
+      <audio id="player-audio" crossorigin="anonymous"></audio>
+    </section>
+
+    <!-- SECCIÓN DE ÁLBUMES Y TRACKS -->
+    <section class="bottom-section">
+      <div class="bottom-section-btns">
+        <div class="bottom-section-btns-left">
+          <button id="show-albums-btn" class="toggle-tab active">Biblioteca</button>
+          <button id="show-tracks-btn" class="toggle-tab">Tracklist</button>
+        </div>
+        <!-- subir musica -->
+        <button id="upload-btn" title="Subir"><img src="./assets/icons/upload-day.png" alt="Subir" class="uploadMusic">
+          Subir archivo</button>
+        <input id="file-input" type="file" accept="audio/*,video/mp4" multiple style="display:none">
+      </div>
+
+      <div class="bottom-section-content" id="bottom-section-content">
+        <!-- Contenedor dinámico -->
+        <div id="album-list" class="album-grid"></div>
+        <ul id="track-list" class="track-list"></ul>
+      </div>
+
+
+
+    </section>
+  </main>
+
+
+
+  <img src="./assets/icons/ondas-day.png" alt="Fondo" class="background-footer">
+  <img src="./assets/icons/ondas-night.png" alt="Fondo" class="background-footer-night">
+  <div id="toast" class="toast"></div>
+
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <p>© 2025 Forentec Music Player</p>
+  </footer>
+
+  <!-- LIBRERÍA AUDIO MOTION -->
+  <script src="https://unpkg.com/audiomotion-analyzer/dist"></script>
+  <script type="module" src="main.js"></script>
+</body>
+
+</html>

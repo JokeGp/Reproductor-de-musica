@@ -1,0 +1,25 @@
+// Referencias DOM centralizadas
+export const DOM = {
+    playPauseBtn: document.getElementById('play-pause-btn'),
+    shuffleBtn: document.getElementById('shuffle-btn'),
+    prevBtn: document.getElementById('prev-btn'),
+    nextBtn: document.getElementById('next-btn'),
+    repeatBtn: document.getElementById('repeat-btn'),
+    uploadBtn: document.getElementById('upload-btn'),
+    fileInput: document.getElementById('file-input'),
+    canvas: document.getElementById('audio-visualizer'),
+    currentTimeSpan: document.getElementById('current-time'),
+    totalTimeSpan: document.getElementById('total-time'),
+    progressBar: document.getElementById('progress-bar'),
+    albumList: document.getElementById('album-list'),
+    trackList: document.getElementById('track-list'),
+    showAlbumsBtn: document.getElementById('show-albums-btn'),
+    showTracksBtn: document.getElementById('show-tracks-btn'),
+    songTitleElem: document.getElementById('song-title'),
+    albumNameElem: document.getElementById('album-name'),
+    viewModeSelect: document.getElementById('view-mode'),
+    themeButtons: document.querySelectorAll('.toggle-btn'),
+    toastEl: document.getElementById('toast'),
+    spectrogramCanvas: document.getElementById('spectrogram-canvas'),
+    audioMotionContainer: document.getElementById('audio-visualizer')
+};
