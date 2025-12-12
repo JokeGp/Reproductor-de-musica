@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Forentec Music Player</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Major+Mono+Display&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Major+Mono+Display&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="login-styles.css">
 </head>
+
 <body>
   <div class="login-container">
     <div class="login-header">
@@ -35,6 +39,20 @@
     </form>
   </div>
 
+  <!-- Loading Modal -->
+  <div id="loading-modal" class="loading-modal hidden">
+    <div class="modal-content">
+      <h2 class="modal-title"><img src="../Reproductor/assets/icons/music-icon.png" alt=""> ¿Sabías que?</h2>
+      <p class="modal-subtitle">
+        Datos curiosos de las canciones: La música se inventó en ......
+        <span class="loading-dots">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
+      </p>
+    </div>
+  </div>
+
   <script src="login.js"></script>
 </body>
+
 </html>

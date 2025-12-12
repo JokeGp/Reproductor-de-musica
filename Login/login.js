@@ -15,9 +15,22 @@ loginForm.addEventListener('submit', (e) => {
 
   // Validar credenciales
   if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-    // Login exitoso - guardar sesión y redireccionar
+    // Login exitoso - guardar sesión
     sessionStorage.setItem('logged_in', 'true');
-    window.location.href = '../Reproductor/index.html';
+
+    // Mostrar modal de carga
+    const loadingModal = document.getElementById('loading-modal');
+    if (loadingModal) {
+      loadingModal.classList.remove('hidden');
+      // Forzar reflow para que la transición de opacidad funcione
+      void loadingModal.offsetWidth;
+      loadingModal.classList.add('active');
+    }
+
+    // Redireccionar después de 4 segundos
+    setTimeout(() => {
+      window.location.href = '../Reproductor/index.html';
+    }, 3000);
   } else {
     // Mostrar error
     errorMessage.classList.add('show');

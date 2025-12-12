@@ -14,7 +14,7 @@
 
 body {
   font-family: "Hind Madurai", sans-serif;
-  background-color: #0e0e11;
+  background-color: #FAF5FD;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -36,6 +36,11 @@ h3 {
 
 .header-left {
   display: flex;
+  gap: 6px;
+}
+
+.project-title img {
+  margin-right: 6px;
 }
 
 .forentec-icon {
@@ -391,6 +396,26 @@ body.dark-mode {
   cursor: pointer;
 }
 
+.visual-dropdown-selected:hover {
+  background-color: #E234F2;
+  color: #FFFFFF;
+}
+
+.visual-dropdown-options.show button:hover {
+  background-color: #E234F2;
+  color: #FFFFFF;
+}
+
+.visual-option:hover {
+  background-color: #E234F2;
+  color: #FFFFFF;
+}
+
+.track-list li:hover {
+  border-color: #E234F2;
+  color: #E234F2;
+}
+
 
 .controls {
   display: flex;
@@ -519,10 +544,14 @@ body.dark-mode #upload-btn:active {
 .main-footer {
   text-align: center;
   padding: 0.8rem;
-  background-color: #1b1b24;
-  color: #ccc;
+  background-color: transparent;
+  color: #7802BA;
   font-size: 0.8rem;
   z-index: 2;
+}
+
+.project-title:hover {
+  color: #E234F2;
 }
 
 
@@ -642,8 +671,17 @@ body.dark-mode #upload-btn:active {
   height: auto;
 }
 
-.visual-option:hover {
-  background-color: #f1f1f1;
+.toggle-btn:hover {
+  background-color: #E234F2;
+}
+
+.toggle-btn.active:hover {
+  background-color: #E234F2;
+  color: #FFFFFF;
+}
+
+.toggle-tab:hover {
+  color: #E234F2;
 }
 
 /* Dark mode overrides */
@@ -727,6 +765,10 @@ body.dark-mode .playback-section {
 }
 
 body.dark-mode .toggle-tab:hover {
+  color: #E234F2;
+}
+
+body.dark-mode .project-title:hover {
   color: #E234F2;
 }
 
@@ -940,7 +982,7 @@ body.dark-mode .toast {
 
   .background-footer {
     position: absolute;
-    bottom: 39px;
+    bottom: 0px;
     left: 0;
     width: 100%;
     height: auto;
@@ -951,7 +993,7 @@ body.dark-mode .toast {
 
   body.dark-mode .background-footer-night {
     position: absolute;
-    bottom: 39px;
+    bottom: 0px;
     left: 0;
     width: 100%;
     height: auto;
@@ -1106,6 +1148,10 @@ body.secret-mode #upload-btn {
 body.secret-mode #upload-btn:hover {
   background-color: #BB555F;
   border-color: #ffff;
+}
+
+body.secret-mode .project-title:hover {
+  color: #9A031E;
 }
 
 body.secret-mode .controls button:hover {
@@ -1265,6 +1311,10 @@ body.christmas-mode #upload-btn:hover {
   background-color: #E6C695;
   border-color: #ffff;
   color: #9A031E;
+}
+
+body.christmas-mode .project-title:hover {
+  color: #E6C695;
 }
 
 body.christmas-mode .controls button:hover {
