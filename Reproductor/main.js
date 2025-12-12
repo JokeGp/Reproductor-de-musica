@@ -195,6 +195,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Move this up
+  const visualizerVideo = document.getElementById('visualizer-video');
+
   // SECRET MODE TRIGGER
   const projectTitles = document.querySelectorAll('.project-title');
   projectTitles.forEach(title => {
@@ -209,6 +212,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Load secret data
       loadAlbumsData('./data/secret_albums.json');
+
+      // Change Visualizer Video
+      if (visualizerVideo) {
+        visualizerVideo.src = "./assets/videos/rocky.mp4";
+        visualizerVideo.load();
+        if (visualizerVideo.style.display === 'block') {
+          visualizerVideo.play().catch(e => console.warn(e));
+        }
+      }
 
       // Update icons
       updateIcons();
@@ -230,6 +242,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (document.body.classList.contains('secret-mode')) {
           document.body.classList.remove('secret-mode');
           loadAlbumsData('./data/albums.json');
+
+          // Restore Default Visualizer Video
+          if (visualizerVideo) {
+            visualizerVideo.src = "./assets/videos/backgound-fts.mp4";
+            visualizerVideo.load();
+            if (visualizerVideo.style.display === 'block') {
+              visualizerVideo.play().catch(e => console.warn(e));
+            }
+          }
         }
 
         // 1. Remove active class from all
@@ -264,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const visualDropdown = document.getElementById('visual-dropdown');
   const visualSelected = document.getElementById('visual-selected');
   const visualOptions = document.getElementById('visual-options');
-  const visualizerVideo = document.getElementById('visualizer-video');
+  // const visualizerVideo = document.getElementById('visualizer-video'); // Moved up
 
   if (visualSelected && visualOptions) {
     // Toggle menu
@@ -352,6 +373,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           state.shuffleState = { type: null, playlist: [], position: 0, albumId: null };
           renderTrackList(state.selectedAlbum);
           DOM.shuffleBtn.classList.remove('active');
+          showToast("🔀 Aleatorio desactivado");
         } else {
           createAlbumShuffle(state.selectedAlbum);
           renderShuffleTracklist();
@@ -362,6 +384,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (first) setTrack(first.album, first.index);
           }
           DOM.shuffleBtn.classList.add('active');
+          showToast("🔀 Aleatorio de álbum activado");
         }
         showTracksSection();
         return;
@@ -373,6 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         showAlbumsSection();
         highlightAlbum(null);
         DOM.shuffleBtn.classList.remove('active');
+        showToast("🔀 Aleatorio desactivado");
       } else {
         createGlobalShuffle();
         renderShuffleTracklist();
@@ -380,6 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (first) setTrack(first.album, first.index);
         DOM.shuffleBtn.classList.add('active');
         showTracksSection();
+        showToast("🔀 Aleatorio global activado");
       }
     });
   }

@@ -933,6 +933,22 @@ body.dark-mode .toast {
   transform: translateY(0);
 }
 
+/* MODO SECRETO */
+body.secret-mode .toast {
+  background-color: #670214;
+  color: #FEFAE0;
+  border: 1px solid #9A031E;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* MODO NAVIDAD */
+body.christmas-mode .toast {
+  background-color: #0E6957;
+  color: #E6C695;
+  border: 1px solid #E6C695;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
 
 /* === MODO ESCRITORIO === */
 @media (min-width: 1099px) {
@@ -1196,6 +1212,7 @@ body.secret-mode .visual-option {
 
 body.secret-mode .main-footer {
   background-color: transparent;
+  color: #FFFFFF;
 }
 
 body.secret-mode .volume-slider-wrapper {
@@ -1389,6 +1406,7 @@ body.christmas-mode .background-footer {
 
 body.christmas-mode .main-footer {
   background-color: transparent;
+  color: #FAF5FD;
 }
 
 body.christmas-mode .bottom-section {
