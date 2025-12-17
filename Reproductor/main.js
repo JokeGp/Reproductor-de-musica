@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Change Visualizer Video
       if (visualizerVideo) {
-        visualizerVideo.src = "./assets/videos/rocky.mp4";
+        visualizerVideo.src = "./assets/videos/backgound-fts-secret.mp4";
         visualizerVideo.load();
         if (visualizerVideo.style.display === 'block') {
           visualizerVideo.play().catch(e => console.warn(e));
