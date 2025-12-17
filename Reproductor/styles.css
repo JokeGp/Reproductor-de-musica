@@ -411,7 +411,7 @@ body.dark-mode {
   color: #FFFFFF;
 }
 
-.track-list li:hover {
+.playlist li:hover {
   border-color: #E234F2;
   color: #E234F2;
 }
@@ -699,16 +699,17 @@ body.dark-mode .visual-option:hover {
 }
 
 
-.track-list {
+.playlist {
   list-style: none;
   padding: 0;
   margin-top: 1rem;
 }
 
-.track-list li {
-  background-color: transparent;
+.playlist li {
+  background-color: rgba(255, 255, 255, 1);
   padding: 0.6rem 1rem;
   border-radius: 8px;
+  height: 32px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
@@ -716,9 +717,23 @@ body.dark-mode .visual-option:hover {
   transition: background-color 0.3s;
   border: 2px solid transparent;
   transition: border-color 0.3s ease;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.25);
 }
 
-.track-list li:hover {
+body.dark-mode .playlist li {
+  background-color: rgba(26, 27, 47, 1);
+}
+
+body.secret-mode .playlist li {
+  background-color: rgba(103, 2, 20, 1);
+  color: rgba(221, 168, 159, 1);
+}
+
+body.christmas-mode .playlist li {
+  background-color: rgba(14, 105, 87, 1);
+}
+
+.playlist li:hover {
   border-color: #E234F2;
 }
 
@@ -780,9 +795,21 @@ body.dark-mode .toggle-btn.active:hover {
   background-color: #E234F2;
 }
 
-body.dark-mode .track-list li:hover {
+body.dark-mode .playlist li:hover {
   border-color: #E234F2;
   color: #E234F2;
+}
+
+body.secret-mode .playlist li:hover {
+  border-color: transparent;
+  background-color: rgba(154, 3, 30, 1);
+  color: rgba(254, 250, 224, 1);
+}
+
+body.christmas-mode .playlist li:hover {
+  border-color: transparent;
+  background-color: rgba(230, 198, 149, 1);
+  color: rgba(152, 24, 23, 1);
 }
 
 body.dark-mode .volume-slider-wrapper {
@@ -918,14 +945,14 @@ body.dark-mode .toggle-tab.active::after {
 
 /* MODO CLARO */
 body:not(.dark-mode) .toast {
-  background-color: #ffffffee;
-  color: #E234F2;
+  background-color: #FFFFFF !important;
+  color: #7802BA;
 }
 
 /* MODO OSCURO */
 body.dark-mode .toast {
-  background-color: #050E21;
-  color: #ffffff;
+  background-color: #1A1B2F !important;
+  color: #FAF5FD;
 }
 
 .toast.show {
@@ -935,18 +962,14 @@ body.dark-mode .toast {
 
 /* MODO SECRETO */
 body.secret-mode .toast {
-  background-color: #670214;
-  color: #FEFAE0;
-  border: 1px solid #9A031E;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: #670214 !important;
+  color: #DDA89F;
 }
 
 /* MODO NAVIDAD */
 body.christmas-mode .toast {
-  background-color: #0E6957;
-  color: #E6C695;
-  border: 1px solid #E6C695;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background-color: #0E6957 !important;
+  color: #FAF5FD;
 }
 
 
@@ -1187,6 +1210,21 @@ body.secret-mode #progress-bar::-moz-range-track {
   /* Firefox range track background is usually static, progress is handled by range-progress */
 }
 
+body.secret-mode .track-list li:hover {
+  border-color: #c74d63;
+  color: #fc8399;
+}
+
+body.secret-mode .toggle-btn:hover {
+  background-color: #9A031E;
+
+}
+
+body.secret-mode .visual-dropdown-selected:hover {
+  background-color: #9A031E;
+
+}
+
 body.secret-mode #progress-bar::-moz-range-progress {
   background-color: #BB555F;
 }
@@ -1419,4 +1457,170 @@ body.christmas-mode .volume-slider-wrapper {
 
 body.christmas-mode #volume-slider {
   background: linear-gradient(to right, #E6C695 var(--volume, 100), #5B6577 var(--volume, 100));
+
+}
+
+
+/* Album Art Header in Playlist */
+.album-art-header {
+  position: relative;
+  width: 100%;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.blur-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+.header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(120, 2, 186, 0.5);
+  z-index: 2;
+}
+
+body.dark-mode .header-overlay {
+  background-color: rgba(120, 2, 186, 0.5);
+}
+
+body.secret-mode .header-overlay {
+  background-color: rgba(52, 2, 11, 0.5);
+}
+
+body.christmas-mode .header-overlay {
+  background-color: rgba(9, 60, 57, 0.5);
+}
+
+.header-text {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: #fff;
+  padding: 10px;
+}
+
+.header-text h2 {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.header-text p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Obsolete header-cover styles removed */
+
+/* Playlist Items Update */
+.playlist li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.track-info-left {
+  /* Ensure it takes space but leaves room for right side */
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.track-info-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Space between time and heart */
+}
+
+.fav-icon {
+  width: 16px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.fav-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Toast Styling */
+#toast {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #333;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 100;
+  bottom: 30px;
+  right: 20px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  #toast {
+    bottom: 20px;
+    right: 20px;
+    left: auto;
+    transform: none;
+  }
+}
+
+#toast.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }

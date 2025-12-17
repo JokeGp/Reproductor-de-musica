@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { DOM } from './dom.js';
-import { renderAlbums, renderTrackList, showTracksSection } from './render.js';
+import { renderAlbums, renderPlaylist, showPlaylistSection } from './render.js';
 import { setTrack } from './controls.js';
 import { formatDuration } from './utils.js';
 import { showToast } from './toast.js';
@@ -58,8 +58,8 @@ export function initUploadListeners() {
 
         state.selectedAlbum = uploadsAlbum;
         renderAlbums();
-        renderTrackList(uploadsAlbum);
-        showTracksSection();
+        renderPlaylist(uploadsAlbum);
+        showPlaylistSection();
 
         if (uploadsAlbum.tracks[firstNewIndex]) {
             setTrack(uploadsAlbum, firstNewIndex, false);
@@ -76,11 +76,11 @@ export function initUploadListeners() {
             tmpAudio.addEventListener('loadedmetadata', () => {
                 uploadsAlbum.tracks[trackIndex].duration = formatDuration(tmpAudio.duration);
                 URL.revokeObjectURL(u);
-                if (state.selectedAlbum && state.selectedAlbum.id === uploadsAlbum.id) renderTrackList(uploadsAlbum);
+                if (state.selectedAlbum && state.selectedAlbum.id === uploadsAlbum.id) renderPlaylist(uploadsAlbum);
             }, { once: true });
             tmpAudio.addEventListener('error', () => {
                 uploadsAlbum.tracks[trackIndex].duration = '0:00';
-                if (state.selectedAlbum && state.selectedAlbum.id === uploadsAlbum.id) renderTrackList(uploadsAlbum);
+                if (state.selectedAlbum && state.selectedAlbum.id === uploadsAlbum.id) renderPlaylist(uploadsAlbum);
             }, { once: true });
         });
 

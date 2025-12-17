@@ -3,7 +3,7 @@ import { state } from './modules/state.js';
 import { initAudioMotion } from './modules/audio.js';
 import { drawScale } from './modules/scale.js';
 import { showToast } from './modules/toast.js';
-import { renderAlbums, renderTrackList, renderShuffleTracklist, showAlbumsSection, showTracksSection } from './modules/render.js';
+import { renderAlbums, renderPlaylist, renderShufflePlaylist, showAlbumsSection, showPlaylistSection, highlightAlbum } from './modules/render.js';
 import { createGlobalShuffle, createAlbumShuffle } from './modules/shuffle.js';
 import { togglePlayPause, setTrack, playNextTrack, playPrevTrack, updateProgressUI } from './modules/controls.js';
 import { startSpectrogram, stopSpectrogram } from './modules/spectrogram.js';
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // progress initial hook
   updateProgressUI();
   // attach audio listeners
-  const { playPauseBtn, shuffleBtn, prevBtn, nextBtn, repeatBtn, showAlbumsBtn, showTracksBtn, themeButtons } = DOM;
+  const { playPauseBtn, shuffleBtn, prevBtn, nextBtn, repeatBtn, showAlbumsBtn, showPlaylistBtn, themeButtons } = DOM;
   const audioEl = document.getElementById('player-audio') || window.audio;
 
   audioEl.addEventListener("timeupdate", updateProgressUI);
@@ -79,6 +79,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const res = await fetch(url);
       state.albums = await res.json();
+
+      // Feature: Favorites Album (Tus Me Gusta)
+      const favoritesAlbum = {
+        id: 'favorites',
+        title: "Playlist de favoritos",
+        artist: "",
+        cover: "./assets/covers/favoritos.png",
+        tracks: []
+      };
+      state.albums.unshift(favoritesAlbum);
+
       // Reset player state to avoid conflicts
       stopCurrentPlayback();
       renderAlbums();
@@ -102,12 +113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     state.currentTrackIndex = 0;
     state.shuffleState = { type: null, playlist: [], position: 0, albumId: null };
 
-    // UI Reset
-    // Instead of hardcoding, we just reset text/values and let updatePlayButtonIcon handle the icon
-    // But we need to ensure the button HAS an image element if it was cleared (unlikely)
-    // The original code reset it to fresh HTML. Let's do that but generic.
     DOM.playPauseBtn.innerHTML = `<img src="" alt="">`;
-    updatePlayButtonIcon(); // This will fill src correctly based on mode
+    updatePlayButtonIcon();
 
     DOM.songTitleElem.textContent = "Título de la canción";
     DOM.albumNameElem.textContent = "Álbum - Artista";
@@ -118,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateProgressUI();
 
     // Force view reset to Albums
-    DOM.trackList.innerHTML = ""; // Clear old tracks
+    DOM.playlist.innerHTML = ""; // Clear old tracks
     showAlbumsSection(); // Switch view
   }
 
@@ -140,11 +147,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     imagesToSwap.forEach(img => {
       if (!img || !img.src) return;
 
-      // Special handling for play/pause button to ensure we don't flip play to pause incorrectly
-      // The play/pause icon logic is handled specifically by updatePlayButtonIcon, 
-      // but if we are here, we might be swapping the SUFFIX for the CURRENT state.
-      // However, to be safe, let's defer play-btn updates to updatePlayButtonIcon 
-      // if this image is indeed the play button icon.
       if (img.closest('#play-pause-btn')) {
         updatePlayButtonIcon();
         return;
@@ -161,37 +163,72 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
 
-    // Also update play button explicitly to matches current state
-    updatePlayButtonIcon();
-
     // Explicitly update background-footer visibility if needed (CSS usually handles this but let's be safe)
+
+
+    // Call specific icon updaters
+    updatePlayButtonIcon();
+    updateRepeatButtonIcon();
+    updateShuffleButtonIcon();
+  }
+
+  function getThemeSuffix() {
+    if (document.body.classList.contains('secret-mode')) return '-secret.png';
+    if (document.body.classList.contains('christmas-mode')) return '-christmas.png';
+    if (document.body.classList.contains('dark-mode')) return '-night.png';
+    return '-day.png';
   }
 
   function updatePlayButtonIcon() {
     const playBtnImg = document.querySelector('#play-pause-btn img');
     if (!playBtnImg) return;
 
-    let suffix = '-day.png'; // Default
-    if (document.body.classList.contains('secret-mode')) {
-      suffix = '-secret.png';
-    } else if (document.body.classList.contains('christmas-mode')) {
-      suffix = '-christmas.png';
-    } else if (document.body.classList.contains('dark-mode')) {
-      suffix = '-night.png';
-    }
-
-    // Determine state
+    const suffix = getThemeSuffix(); // Reusing the helper
     const isPaused = audioEl.paused;
     const iconName = isPaused ? 'play' : 'pause';
-
-    // Construct new source
-    // We assume the path is fixed relative to ./assets/icons/
     const newSrc = `./assets/icons/${iconName}${suffix}`;
 
-    // Only update if different to avoid flickering (though src change usually fine)
-    if (!playBtnImg.src.endsWith(newSrc.replace('./', ''))) { // Simple check
-      // Retain path context if needed, but here we can just set it
+    if (!playBtnImg.src.endsWith(newSrc.replace('./', ''))) {
       playBtnImg.src = newSrc;
+    }
+  }
+
+  function updateRepeatButtonIcon() {
+    const repeatBtnImg = document.querySelector('#repeat-btn img');
+    if (!repeatBtnImg) return;
+
+    const suffix = getThemeSuffix();
+    let iconName = 'repetir'; // Default (Off/Mode 0?)
+
+    // Logic: Mode 0 (Off) -> Mode 1 (One) -> Mode 2 (All)
+    // Mode 0: Default icon (repetir)
+    // Mode 1: Repeat One (repetir-one)
+    // Mode 2: Repeat All (repetir-all)
+
+    if (state.repeatMode === 1) iconName = 'repetir-one';
+    if (state.repeatMode === 2) iconName = 'repetir-all';
+
+    // Note: Assuming filenames: repetir-day.png, repetir-one-day.png, repetir-all-day.png
+    const newSrc = `./assets/icons/${iconName}${suffix}`;
+    if (!repeatBtnImg.src.endsWith(newSrc.replace('./', ''))) {
+      repeatBtnImg.src = newSrc;
+    }
+  }
+
+  function updateShuffleButtonIcon() {
+    const shuffleBtnImg = document.querySelector('#shuffle-btn img');
+    if (!shuffleBtnImg) return;
+
+    const suffix = getThemeSuffix();
+    let iconName = 'random'; // Default (Inactive)
+
+    if (state.shuffleState.type) {
+      iconName = 'random-active'; // Active
+    }
+
+    const newSrc = `./assets/icons/${iconName}${suffix}`;
+    if (!shuffleBtnImg.src.endsWith(newSrc.replace('./', ''))) {
+      shuffleBtnImg.src = newSrc;
     }
   }
 
@@ -272,6 +309,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // 4. Update images logic
         updateIcons();
+
+        // 4.1 Update Playlist Favorite Icons if visible
+        // Check if playlist is active
+        if (DOM.showPlaylistBtn.classList.contains('active')) {
+          if (state.shuffleState.type) {
+            renderShufflePlaylist();
+          } else if (state.selectedAlbum) {
+            renderPlaylist(state.selectedAlbum);
+          }
+        }
 
         drawScale();
 
@@ -371,12 +418,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (state.selectedAlbum) {
         if (state.shuffleState.type === 'album' && state.shuffleState.albumId === state.selectedAlbum.id) {
           state.shuffleState = { type: null, playlist: [], position: 0, albumId: null };
-          renderTrackList(state.selectedAlbum);
+          renderPlaylist(state.selectedAlbum);
           DOM.shuffleBtn.classList.remove('active');
-          showToast("🔀 Aleatorio desactivado");
+          updateShuffleButtonIcon();
+          updateShuffleButtonIcon();
+          const suffix = getThemeSuffix();
+          const iconSrc = `./assets/icons/random${suffix}`;
+          showToast(`<img src="${iconSrc}" class="toast-icon"> Aleatorio desactivado`);
         } else {
           createAlbumShuffle(state.selectedAlbum);
-          renderShuffleTracklist();
+          renderShufflePlaylist();
           if (!audioEl.paused && audioEl.src && audioEl.src.includes(String(state.selectedAlbum.id))) {
             // nothing
           } else {
@@ -384,9 +435,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (first) setTrack(first.album, first.index);
           }
           DOM.shuffleBtn.classList.add('active');
-          showToast("🔀 Aleatorio de álbum activado");
+          updateShuffleButtonIcon();
+          updateShuffleButtonIcon();
+          const suffix = getThemeSuffix();
+          const iconSrc = `./assets/icons/random-active${suffix}`;
+          showToast(`<img src="${iconSrc}" class="toast-icon"> Modo aleatorio activado`);
         }
-        showTracksSection();
+        showPlaylistSection();
         return;
       }
 
@@ -396,15 +451,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         showAlbumsSection();
         highlightAlbum(null);
         DOM.shuffleBtn.classList.remove('active');
-        showToast("🔀 Aleatorio desactivado");
+        updateShuffleButtonIcon();
+        updateShuffleButtonIcon();
+        const suffix = getThemeSuffix();
+        const iconSrc = `./assets/icons/random${suffix}`;
+        showToast(`<img src="${iconSrc}" class="toast-icon"> Aleatorio desactivado`);
       } else {
         createGlobalShuffle();
-        renderShuffleTracklist();
+        renderShufflePlaylist();
         const first = state.shuffleState.playlist[0];
         if (first) setTrack(first.album, first.index);
         DOM.shuffleBtn.classList.add('active');
-        showTracksSection();
-        showToast("🔀 Aleatorio global activado");
+        showPlaylistSection(); // Renamed function
+        updateShuffleButtonIcon();
+        showPlaylistSection(); // Renamed function
+        updateShuffleButtonIcon();
+        const suffix = getThemeSuffix();
+        const iconSrc = `./assets/icons/random-active${suffix}`;
+        showToast(`<img src="${iconSrc}" class="toast-icon"> Shuffle Global Activado`);
       }
     });
   }
@@ -412,33 +476,51 @@ document.addEventListener('DOMContentLoaded', async () => {
   // SHOW ALBUMS
   if (DOM.showAlbumsBtn) DOM.showAlbumsBtn.addEventListener('click', () => { renderAlbums(); showAlbumsSection(); });
 
-  // SHOW TRACKS
-  if (DOM.showTracksBtn) DOM.showTracksBtn.addEventListener('click', () => {
+  // SHOW PLAYLIST
+  if (DOM.showPlaylistBtn) DOM.showPlaylistBtn.addEventListener('click', () => {
     if (state.shuffleState.type === 'global') {
-      renderShuffleTracklist();
+      renderShufflePlaylist();
       DOM.shuffleBtn.classList.add('active');
-      showTracksSection();
+      showPlaylistSection();
       return;
     }
 
     if (state.shuffleState.type === 'album') {
-      if (state.selectedAlbum && state.shuffleState.albumId === state.selectedAlbum.id) {
-        renderShuffleTracklist();
+      if (state.playingAlbum && state.shuffleState.albumId === state.playingAlbum.id) {
+        renderShufflePlaylist();
         DOM.shuffleBtn.classList.add('active');
       } else {
-        state.shuffleState = { type: null, playlist: [], position: 0, albumId: null };
-        DOM.shuffleBtn.classList.remove('active');
-        if (state.selectedAlbum) renderTrackList(state.selectedAlbum);
-        else renderAlbums();
+        if (state.playingAlbum) {
+          // If we are playing an album, switch to it, exit shuffle view if it doesn't match?
+          // Actually if shuffle is active, we should probably show shuffle playlist as priority.
+          // But existing logic seemed to toggle.
+          // Let's stick to plan: Playlist button shows Playing Context.
+          // If shuffle is active, show shuffle.
+          renderShufflePlaylist();
+          DOM.shuffleBtn.classList.add('active');
+        } else {
+          // Should not happen if shuffle is active
+          renderAlbums();
+        }
       }
-      showTracksSection();
+      showPlaylistSection();
       return;
     }
 
-    if (state.selectedAlbum && state.shuffleState.type !== 'global') {
-      renderTrackList(state.selectedAlbum);
+    // Default case: Show currently playing album
+    if (state.playingAlbum && state.shuffleState.type !== 'global') {
+      renderPlaylist(state.playingAlbum);
+      state.selectedAlbum = state.playingAlbum; // Sync view
+      highlightAlbum(state.playingAlbum.id); // Sync highlight
       DOM.shuffleBtn.classList.remove('active');
-      showTracksSection();
+      showPlaylistSection();
+      return;
+    }
+
+    // Fallback: Show selected album if nothing playing
+    if (state.selectedAlbum) {
+      renderPlaylist(state.selectedAlbum);
+      showPlaylistSection();
       return;
     }
 
@@ -446,14 +528,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       a.tracks.map(t => ({ album: a, title: t.title, duration: t.duration }))
     );
 
-    DOM.trackList.innerHTML = allTracks.map((t, i) => `
+    DOM.playlist.innerHTML = allTracks.map((t, i) => `
       <li data-index="${i}">
         <span>${i + 1}. ${t.title} <em>(${t.album.title})</em></span>
         <span>${t.duration || '0:00'}</span>
       </li>
     `).join('');
 
-    document.querySelectorAll('#track-list li').forEach((li, i) => {
+    document.querySelectorAll('#playlist li').forEach((li, i) => {
       const { album } = allTracks[i];
       li.addEventListener('click', () => {
         state.selectedAlbum = album;
@@ -469,7 +551,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     DOM.shuffleBtn.classList.remove('active');
-    showTracksSection();
+    showPlaylistSection();
   });
 
   // AUDIO events: ended (repeat logic)
@@ -496,16 +578,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Repeat button
   if (DOM.repeatBtn) DOM.repeatBtn.addEventListener('click', () => {
     state.repeatMode = (state.repeatMode + 1) % 3;
-    if (state.repeatMode === 0) showToast("🔁 Repetición desactivada");
-    if (state.repeatMode === 1) showToast("🔂 Repitiendo la pista actual");
-    if (state.repeatMode === 2) showToast("🔁 Repitiendo la lista completa");
+    updateRepeatButtonIcon();
+    const suffix = getThemeSuffix();
+    let toastIcon = 'repetir';
+    let toastMsg = "Repetición desactivada";
+
+    if (state.repeatMode === 1) {
+      toastIcon = 'repetir-one';
+      toastMsg = "Repitiendo la pista actual";
+    } else if (state.repeatMode === 2) {
+      toastIcon = 'repetir-all';
+      toastMsg = "Repitiendo la lista completa";
+    }
+
+    const iconSrc = `./assets/icons/${toastIcon}${suffix}`;
+    // Use innerHTML for image
+    showToast(`<img src="${iconSrc}" class="toast-icon"> ${toastMsg}`);
   });
 
   // Custom events from render (track-click / shuffle-track-click)
   document.addEventListener('track-click', (e) => {
     const { albumId, index } = e.detail;
     const album = state.albums.find(a => a.id == albumId);
-    if (album) setTrack(album, index);
+    if (album) {
+      // User manually selected a track -> Clear shuffle mode
+      if (state.shuffleState.type) {
+        state.shuffleState = { type: null, playlist: [], position: 0, albumId: null };
+        DOM.shuffleBtn.classList.remove('active');
+        updateShuffleButtonIcon();
+        showToast("🔀 Shuffle desactivado por selección manual");
+      }
+      setTrack(album, index);
+    }
   });
 
   document.addEventListener('shuffle-track-click', (e) => {

@@ -1,6 +1,6 @@
 import { audio, sharedAnalyser } from './audio.js'; // sharedAnalyser imported indirectly if needed
 import { state } from './state.js';
-import { renderAlbums, renderTrackList, renderShuffleTracklist, highlightAlbum, highlightTrackInList, showTracksSection } from './render.js';
+import { renderAlbums, renderPlaylist, renderShufflePlaylist, highlightAlbum, highlightTrackInList, showPlaylistSection } from './render.js';
 import { showToast } from './toast.js';
 import { updateShufflePositionFor } from './shuffle.js';
 import { DOM } from './dom.js';
@@ -30,6 +30,7 @@ export function setTrack(albumObj, index, playNow = true) {
     }
 
     state.currentTrackIndex = index;
+    state.playingAlbum = albumObj;
 
     if (state.shuffleState.type === 'album') state.selectedAlbum = albumObj;
     else if (!state.shuffleState.type) state.selectedAlbum = albumObj;
@@ -63,6 +64,7 @@ export function setTrack(albumObj, index, playNow = true) {
 }
 
 // next
+// next
 export function playNextTrack() {
     if (state.shuffleState.type) {
         state.shuffleState.position++;
@@ -80,13 +82,80 @@ export function playNextTrack() {
         return;
     }
 
-    if (!state.selectedAlbum) return;
+    if (!state.playingAlbum) return;
     let next = state.currentTrackIndex + 1;
-    if (next >= state.selectedAlbum.tracks.length) {
-        if (state.repeatMode === 2) next = 0;
-        else return;
+    if (next >= state.playingAlbum.tracks.length) {
+        if (state.repeatMode === 2) {
+            next = 0;
+        } else if (state.repeatMode === 1) {
+            // Find current album index
+            const currentAlbumIdx = state.albums.findIndex(a => a.id === state.playingAlbum.id);
+            if (currentAlbumIdx !== -1) {
+                let nextAlbumIdx = currentAlbumIdx + 1;
+                let albumsChecked = 0;
+                let foundValidAlbum = false;
+
+                // Loop to find next non-empty album
+                while (albumsChecked < state.albums.length) {
+                    if (nextAlbumIdx >= state.albums.length) {
+                        nextAlbumIdx = 0; // Wrap to first album
+                    }
+
+                    if (state.albums[nextAlbumIdx].tracks.length > 0) {
+                        foundValidAlbum = true;
+                        break;
+                    }
+
+                    nextAlbumIdx++;
+                    albumsChecked++;
+                }
+
+                if (foundValidAlbum) {
+                    const nextAlbum = state.albums[nextAlbumIdx];
+                    setTrack(nextAlbum, 0);
+                    return;
+                } else {
+                    return;
+                }
+            } else {
+                return;
+            }
+        } else {
+            // Repeat Mode 0 (Default) -> Continuous Play
+            const currentAlbumIdx = state.albums.findIndex(a => a.id === state.playingAlbum.id);
+            if (currentAlbumIdx !== -1) {
+                let nextAlbumIdx = currentAlbumIdx + 1;
+                let albumsChecked = 0;
+                let foundValidAlbum = false;
+
+                // Loop to find next non-empty album
+                while (albumsChecked < state.albums.length) {
+                    if (nextAlbumIdx >= state.albums.length) {
+                        nextAlbumIdx = 0;
+                    }
+
+                    if (state.albums[nextAlbumIdx].tracks.length > 0) {
+                        foundValidAlbum = true;
+                        break;
+                    }
+
+                    nextAlbumIdx++;
+                    albumsChecked++;
+                }
+
+                if (foundValidAlbum) {
+                    const nextAlbum = state.albums[nextAlbumIdx];
+                    setTrack(nextAlbum, 0);
+                    return;
+                } else {
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
     }
-    setTrack(state.selectedAlbum, next);
+    setTrack(state.playingAlbum, next);
 }
 
 // prev
@@ -112,14 +181,14 @@ export function playPrevTrack() {
         return;
     }
 
-    if (!state.selectedAlbum) return;
+    if (!state.playingAlbum) return;
     let prev = state.currentTrackIndex - 1;
     if (prev < 0) {
-        if (state.repeatMode === 2) prev = state.selectedAlbum.tracks.length - 1;
+        if (state.repeatMode === 2) prev = state.playingAlbum.tracks.length - 1;
         else return;
     }
 
-    setTrack(state.selectedAlbum, prev);
+    setTrack(state.playingAlbum, prev);
 }
 
 // progress update bound to audio events

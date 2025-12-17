@@ -117,7 +117,7 @@
       <div class="bottom-section-btns">
         <div class="bottom-section-btns-left">
           <button id="show-albums-btn" class="toggle-tab active">Biblioteca</button>
-          <button id="show-tracks-btn" class="toggle-tab">Tracklist</button>
+          <button id="show-playlist-btn" class="toggle-tab">Playlist</button>
         </div>
         <!-- subir musica -->
         <button id="upload-btn" title="Subir"><img src="./assets/icons/upload-day.png" alt="Subir" class="uploadMusic">
@@ -125,10 +125,21 @@
         <input id="file-input" type="file" accept="audio/*,video/mp4" multiple style="display:none">
       </div>
 
+      <!-- Album Art & Blur Header (Visible only in Playlist mode) -->
+      <div id="album-art-header" class="album-art-header" style="display: none;">
+        <div class="blur-bg" id="blur-bg"></div>
+        <div class="header-overlay" id="header-overlay"></div>
+        <div class="header-text">
+          <h2 id="playlist-album-title">Album Title <p id="playlist-album-artist">Artist Name</p>
+          </h2>
+
+        </div>
+      </div>
+
       <div class="bottom-section-content" id="bottom-section-content">
         <!-- Contenedor dinámico -->
         <div id="album-list" class="album-grid"></div>
-        <ul id="track-list" class="track-list"></ul>
+        <ul id="playlist" class="playlist"></ul>
       </div>
 
 

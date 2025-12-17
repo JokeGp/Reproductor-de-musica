@@ -12,14 +12,18 @@ export const DOM = {
     totalTimeSpan: document.getElementById('total-time'),
     progressBar: document.getElementById('progress-bar'),
     albumList: document.getElementById('album-list'),
-    trackList: document.getElementById('track-list'),
+    playlist: document.getElementById('playlist'),
     showAlbumsBtn: document.getElementById('show-albums-btn'),
-    showTracksBtn: document.getElementById('show-tracks-btn'),
+    showPlaylistBtn: document.getElementById('show-playlist-btn'),
     songTitleElem: document.getElementById('song-title'),
     albumNameElem: document.getElementById('album-name'),
     viewModeSelect: document.getElementById('view-mode'),
     themeButtons: document.querySelectorAll('.toggle-btn'),
     toastEl: document.getElementById('toast'),
     spectrogramCanvas: document.getElementById('spectrogram-canvas'),
-    audioMotionContainer: document.getElementById('audio-visualizer')
+    audioMotionContainer: document.getElementById('audio-visualizer'),
+    albumArtHeader: document.getElementById('album-art-header'),
+    blurBg: document.getElementById('blur-bg'),
+    playlistAlbumTitle: document.getElementById('playlist-album-title'),
+    playlistAlbumArtist: document.getElementById('playlist-album-artist')
 };
